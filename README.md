@@ -36,7 +36,6 @@ There are several possible options defined for the image cropper
 # Cleaning up an imagecropper instance
 
 > img_c = new ImageCropper('#test-imagecrop', 'img.jpg');
-> ...
 > img_c.destroy();
 
 # Example
