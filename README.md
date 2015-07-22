@@ -25,15 +25,15 @@ The selector is an html5 css selector ( such as '#myTestDiv' ), basically anythi
 ## image_url
 This should point to the location of the image that you want to have cropped.
 
-## options
+## options (update, max_width, max_height)
 There are several possible options defined for the image cropper 
 
 * update
-..* Callback function that is called everytime a move/change happens
+  * Callback function that is called everytime a move/change happens
 * max_width
-..* Sets the maximum width that the imagecropper can become
+  * Sets the maximum width that the imagecropper can become
 * max_height
-..* Set the maximum height for the imagecropper
+  * Set the maximum height for the imagecropper
 
 # Cleaning up an imagecropper instance
 
