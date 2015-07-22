@@ -19,13 +19,13 @@ Creating an imagecropper is done like so
 img_c = new ImageCropper(selector, image_url, options);
 ```
 
-## selector
+### selector
 The selector is an html5 css selector ( such as '#myTestDiv' ), basically anything that works with a querySelector does the job. This should point to the element where you want the imagecropper to be located.
 
-## image_url
+### image_url
 This should point to the location of the image that you want to have cropped.
 
-## options (update, max_width, max_height)
+### options (update, max_width, max_height)
 There are several possible options defined for the image cropper 
 
 * update
