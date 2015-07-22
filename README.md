@@ -15,7 +15,9 @@ To get started, you need only do a couple things
 # Creating an imagecropper instance
 Creating an imagecropper is done like so 
 
-> img_c = new ImageCropper(selector, image_url, options);
+```javascript
+img_c = new ImageCropper(selector, image_url, options);
+```
 
 ## selector
 The selector is an html5 css selector ( such as '#myTestDiv' ), basically anything that works with a querySelector does the job. This should point to the element where you want the imagecropper to be located.
@@ -35,8 +37,10 @@ There are several possible options defined for the image cropper
 
 # Cleaning up an imagecropper instance
 
-> img_c = new ImageCropper('#test-imagecrop', 'img.jpg');
-> img_c.destroy();
+```javascript
+img_c = new ImageCropper('#test-imagecrop', 'img.jpg');
+img_c.destroy();
+```
 
 # Example
 For an example, check out the example folder in the repository
