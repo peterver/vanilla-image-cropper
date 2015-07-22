@@ -1,0 +1,24 @@
+{
+  "name": "peterver-img-crop",
+  "version": "0.1.0",
+  "authors": [
+    "Peter Vermeulen <contact@peterver.be>"
+  ],
+  "description": "Lightweight image cropper, with zero dependency requirements",
+  "main": [
+    "build/imagecrop.min.js",
+    "build/imagecrop.min.css"
+  ],
+  "keywords": [
+    "imagecropper",
+    "vanillajs",
+    "html5",
+    "lightweight"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/peterver/image-crop",
+  "ignore": [
+    "node_modules",
+    "example"
+  ],
+}
