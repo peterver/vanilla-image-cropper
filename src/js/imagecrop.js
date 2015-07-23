@@ -66,7 +66,6 @@ var ImageCropper = (function() {
     tmp_opts = tmp_opts ? tmp_opts : {};
 
     opts['update'] = ('update' in tmp_opts) ? tmp_opts['update'] : false;
-    opts['ratio'] = ('ratio' in tmp_opts) ? tmp_opts['ratio'] : 1;
     opts['max_width'] = ('max_width' in tmp_opts) ? tmp_opts['max_width'] : 500;
     opts['max_height'] = ('max_height' in tmp_opts) ? tmp_opts['max_height'] : 500;
 
