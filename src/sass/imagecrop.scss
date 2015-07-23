@@ -1,6 +1,8 @@
 $border-color: #fff;
 
 .imgc {
+  position: relative;
+  display: inline-block;
   user-select: none;
 
   canvas {

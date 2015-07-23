@@ -54,7 +54,7 @@ var ImageCropper = (function() {
 
   var initialized   = false;
   var has_focus     = false;
-  var dim           = {x: 100, y: 100, w: 80, h: 80};
+  var dim           = {x: 0, y: 0, w: 80, h: 80};
   var opts          = {};
   var img           = null;
 
@@ -148,10 +148,12 @@ var ImageCropper = (function() {
     initialized = false;
   };
 
-  ImageCropper.prototype.crop = function() {
-    console.log(dim);
+  ImageCropper.prototype.crop = function(mime_type, quality) {
+    if(!mime_type || (mime_type !== 'image/jpeg' && mime_type !== 'image/png')) {mime_type = 'image/jpeg';}
+    if(!quality || quality < 0 || quality > 1) {quality = 1;}
+
     var retina_factor = (window.devicePixelRatio > 1) ? 2 : 1;
-    var tmp = { x: dim.x * 2, y: dim.y * 2, w: dim.w * 2, h: dim.h * 2};
+    var tmp = { x: dim.x * retina_factor, y: dim.y * retina_factor, w: dim.w * retina_factor , h: dim.h * retina_factor };
 
     canvas.setAttribute('width', tmp.w);
     canvas.setAttribute('height', tmp.h);
@@ -159,7 +161,7 @@ var ImageCropper = (function() {
     ctx.imageSmoothingEnabled = false;
     //  TODO !
     ctx.drawImage(img, tmp.x, tmp.y, tmp.w, tmp.h, 0, 0, tmp.w, tmp.h);
-    return canvas.toDataURL('image/jpeg');
+    return canvas.toDataURL(mime_type, quality);
   };
 
 //

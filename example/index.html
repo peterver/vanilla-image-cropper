@@ -15,29 +15,44 @@
 		    body {
 				background-color: #c9c9c9;
 			}
-
-			#test-imagecrop {
-				display: inline-block;
-				position: absolute;
-				top: 50%;
-				left: 50%;
-				margin-left: -250px;
-				margin-top: -250px;
-			}
 		</style>
 	</head>
 	<body>
 		<!-- ENTER CONTENT -->
-		<div id="test-imagecrop"></div>
+		<div class="test-imagecrop"></div>
+		<button type="button" class="crop-button">
+			<span>Crop!</span>
+		</button>
+		<div class="preview"></div>
 		<!-- SCRIPTS -->
 		<script type="text/javascript" src="../src/js/imagecrop.js"></script>
 		<script type="text/javascript">
+		window.onload = function() {
+			var dimensions = null;
+
 			var onUpdateHandler = function (dim) {
-				console.log(dim);
+				dimensions = dim;
 			};
-			var img_c = new ImageCropper('#test-imagecrop', 'img.jpg', {
+
+			var onCropHandler = function() {
+				var img = new Image();
+				img.src = img_c.crop('image/jpeg', 1);
+				img.width = dimensions.w;
+				img.height = dimensions.h;
+				var target = document.querySelector('.preview');
+				while(target.firstChild) {
+					target.removeChild(target.firstChild)
+				}
+				target.appendChild(img);
+			}			
+
+			var img_c = new ImageCropper('.test-imagecrop', 'img.jpg', {
 				update: onUpdateHandler
 			});
+
+			var button = document.querySelector('.crop-button');
+			button.addEventListener('click', onCropHandler);
+		}
 		</script>
 	</body>
 </html>
