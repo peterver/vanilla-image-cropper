@@ -35,6 +35,22 @@ There are several possible options defined for the image cropper
 * max_height
   * Set the maximum height for the imagecropper
 
+# Cropping an image (mime_type, quality)
+When you're all done with your changes, you can crop the image by calling the *crop* function. This will return a base64 string that you can then do some funky stuff with.
+
+```javascript
+var img_b64_str = img_c.crop(mime_type, quality);
+... // do some funky stuff here
+```
+
+### mime_type ( default = 'image/jpeg'
+The following mime_types are currently supported in this build, they need to be passed as a string value.
+* image/jpeg
+* image/png
+
+### Quality
+The quality is a numeric value between 0 and 1. Where 1 is the highest quality setting, and 0 is the lowest quality setting. 
+
 # Cleaning up an imagecropper instance
 
 ```javascript
