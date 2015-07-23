@@ -1,4 +1,3 @@
-"use strict";
 var ImageCropper = (function() {
 
 //
@@ -60,11 +59,11 @@ var ImageCropper = (function() {
 
   function ImageCropper(selector, img_src, tmp_opts) {
     if(!img_src || !selector) return;
-
     src_el = document.querySelector(selector);
-    src_el.className += ' imgc';
+    //  Add classname only if necessary
+    src_el.className += (' '+src_el.className+' ').indexOf(' imgc ') > -1 ? '' : ' imgc';
+    //  Parse opts
     tmp_opts = tmp_opts ? tmp_opts : {};
-
     opts['update'] = ('update' in tmp_opts) ? tmp_opts['update'] : false;
     opts['max_width'] = ('max_width' in tmp_opts) ? tmp_opts['max_width'] : 500;
     opts['max_height'] = ('max_height' in tmp_opts) ? tmp_opts['max_height'] : 500;
@@ -98,11 +97,9 @@ var ImageCropper = (function() {
 
     //  Canvas for cropping
     canvas = document.createElement('canvas');
-    canvas.setAttribute('width',w*2);
-    canvas.setAttribute('height', h*2);
+    canvas.setAttribute('width', w);
+    canvas.setAttribute('height', h);
     src_el.appendChild(canvas);
-    var ctx = canvas.getContext('2d');
-    ctx.scale(2, 2);
 
     src_el.appendChild(img);
     img.width = w;
@@ -138,10 +135,7 @@ var ImageCropper = (function() {
   ImageCropper.prototype.destroy = function() {
     if(!initialized) return;
 
-    src_el.removeChild(canvas);
-    src_el.removeChild(img);
-    src_el.removeChild(overlay);
-    src_el.removeChild(handles_wrap);
+    while (src_el.firstChild) { src_el.removeChild(src_el.firstChild); }
     src_el.removeEventListener('mousedown', master_mousedown);
 
     canvas = img = handles_wrap = handles = overlay = overlay_el = null;
@@ -152,8 +146,7 @@ var ImageCropper = (function() {
     if(!mime_type || (mime_type !== 'image/jpeg' && mime_type !== 'image/png')) {mime_type = 'image/jpeg';}
     if(!quality || quality < 0 || quality > 1) {quality = 1;}
 
-    var retina_factor = (window.devicePixelRatio > 1) ? 2 : 1;
-    var tmp = { x: dim.x * retina_factor, y: dim.y * retina_factor, w: dim.w * retina_factor , h: dim.h * retina_factor };
+    var tmp = { x: dim.x, y: dim.y, w: dim.w , h: dim.h };
 
     canvas.setAttribute('width', tmp.w);
     canvas.setAttribute('height', tmp.h);
