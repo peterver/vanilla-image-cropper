@@ -23,12 +23,20 @@
 		<button type="button" class="crop-button">
 			<span>Crop!</span>
 		</button>
+		<button type="button" class="destroy-button">
+			<span>Destroy</span>
+		</button>
+		<button type="button" class="create-button">
+			<span>Create</span>
+		</button>
 		<div class="preview"></div>
 		<!-- SCRIPTS -->
 		<script type="text/javascript" src="../src/js/imagecrop.js"></script>
 		<script type="text/javascript">
 		window.onload = function() {
 			var dimensions = null;
+			var is_active = false;
+			var img_c = null;
 
 			var onUpdateHandler = function (dim) {
 				dimensions = dim;
@@ -44,14 +52,44 @@
 					target.removeChild(target.firstChild)
 				}
 				target.appendChild(img);
-			}			
+			};
 
-			var img_c = new ImageCropper('.test-imagecrop', 'img.jpg', {
+			var onCreateHandler = function() {
+				if(is_active) { return; }
+
+				new ImageCropper('.test-imagecrop', 'img.jpg', {
+					update: onUpdateHandler
+				});
+				destroy_btn.style.display = 'initial';
+				create_btn.style.display = 'none';
+
+				is_active = true;
+			};
+
+			var onDestroyHandler = function() {
+				if(!is_active) { return; }
+				
+				img_c.destroy();
+				destroy_btn.style.display = 'none';
+				create_btn.style.display = 'initial';
+
+				is_active = false;
+			};
+
+			var crop_btn = document.querySelector('.crop-button');
+			crop_btn.addEventListener('click', onCropHandler);
+
+			var create_btn = document.querySelector('.create-button');
+			create_btn.addEventListener('click', onCreateHandler);
+			create_btn.style.display = 'none';
+
+			var destroy_btn = document.querySelector('.destroy-button');
+			destroy_btn.addEventListener('click', onDestroyHandler);
+
+			img_c = new ImageCropper('.test-imagecrop', 'img.jpg', {
 				update: onUpdateHandler
 			});
-
-			var button = document.querySelector('.crop-button');
-			button.addEventListener('click', onCropHandler);
+			is_active = true;
 		}
 		</script>
 	</body>
