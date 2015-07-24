@@ -160,7 +160,7 @@ var ImageCropper = (function() {
 //
 //  EVENTS
 //
-  var convertGlobalToLocal = function(e) {
+  function convertGlobalToLocal(e) {
     var x = e.clientX - src_dim('left'), y = e.clientY - src_dim('top');
     return {
       x : x < 0 ? 0 : (x > src_dim('width') ? src_dim('width') : x),
@@ -168,14 +168,14 @@ var ImageCropper = (function() {
     }
   };
 
-  var collisionCheck = function() {
+  function collisionCheck() {
     dim.w = (dim.w < 32) ? 32 : dim.w;
     dim.h = (dim.h < 32) ? 32 : dim.h;
     dim.x = (dim.x < 0) ? 0 : (dim.x + dim.w > src_dim('width') ? (src_dim('width') - dim.w) : dim.x);
     dim.y = (dim.y < 0) ? 0 : (dim.y + dim.h > src_dim('height') ? (src_dim('height') - dim.h) : dim.y);
   };
 
-  var draw = function() {
+  function draw() {
     handles_wrap.style.top = dim.y + 'px';
     handles_wrap.style.left = dim.x + 'px';
     handles_wrap.style.width = dim.w + 'px';
@@ -186,7 +186,7 @@ var ImageCropper = (function() {
     if(opts['update']) { opts['update'](dim); }
   };
 
-  var update = function(evt) {
+  function update(evt) {
     evt = convertGlobalToLocal(evt);
     dim.x = evt.x - dim.w*.5;
     dim.y = evt.y - dim.h*.5;
@@ -194,7 +194,7 @@ var ImageCropper = (function() {
     draw();
   };
 
-  var master_mousedown = function(evt) {
+  function master_mousedown(evt) {
     if(has_focus) return;
     document.addEventListener('mousemove', master_mousemove);
     document.addEventListener('mouseup', window_blur);
@@ -202,14 +202,14 @@ var ImageCropper = (function() {
     has_focus = true;
   };
 
-  var window_blur = function(evt) {
+  function window_blur(evt) {
     if(!has_focus) return;
     document.removeEventListener('mouseup', window_blur);
     document.removeEventListener('mousemove', master_mousemove);
     has_focus = false;
   };
 
-  var master_mousemove = function(evt) {
+  function master_mousemove(evt) {
     if(!has_focus) return;
     update(evt);
   };
@@ -226,14 +226,14 @@ var ImageCropper = (function() {
 
     //  EVENTS
 
-    var handle_down = function(e) {
+    function handle_down(e) {
       e.stopPropagation();
       has_focus = true;
       document.addEventListener('mouseup', handle_up);
       document.addEventListener('mousemove', handle_move);
     };
 
-    var handle_move = function(e) {
+    function handle_move(e) {
       e.stopPropagation();
       if(has_focus) {
         cb(convertGlobalToLocal(e));
@@ -242,7 +242,7 @@ var ImageCropper = (function() {
       }
     };
 
-    var handle_up = function(e) {
+    function handle_up(e) {
       e.stopPropagation();
       has_focus = false;
       document.removeEventListener('mouseup', handle_up);
