@@ -20,10 +20,12 @@ img_c = new ImageCropper(selector, image_url, options);
 ```
 
 ### selector
-The selector is an html5 css selector ( such as '#myTestDiv' ), basically anything that works with a querySelector does the job. This should point to the element where you want the imagecropper to be located.
+The selector is an html5 css selector ( such as '#myTestDiv' ), basically anything that works with a querySelector does the job.
+
+It should point to the element where you want the imagecropper to be located.
 
 ### image_url
-This should point to the location of the image that you want to have cropped.
+The image_url should point to the location of the image that you want to have cropped. Meaning the url of the source image.
 
 ### options (update, max_width, max_height)
 There are several possible options defined for the image cropper 
@@ -33,17 +35,19 @@ There are several possible options defined for the image cropper
 * max_width
   * Sets the maximum width that the imagecropper can become
 * max_height
-  * Set the maximum height for the imagecropper
+  * Sets the maximum height for the imagecropper
 
 # Cropping an image (mime_type, quality)
-When you're all done with your changes, you can crop the image by calling the *crop* function. This will return a base64 string that you can then do some funky stuff with.
+When you're all done with your changes, you can crop the image by calling the **crop** function.
+
+This will return a base64 string that you can then do some funky stuff with.
 
 ```javascript
 var img_b64_str = img_c.crop(mime_type, quality);
 ... // do some funky stuff here
 ```
 
-### mime_type ( default = 'image/jpeg'
+### mime_type ( default = 'image/jpeg')
 The following mime_types are currently supported in this build, they need to be passed as a string value.
 * image/jpeg
 * image/png
