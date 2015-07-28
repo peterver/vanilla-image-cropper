@@ -62,7 +62,6 @@ var ImageCropper = (function() {
     //  Parse opts
     tmp_opts = tmp_opts ? tmp_opts : {};
     opts.up = ('update' in tmp_opts) ? tmp_opts['update'] : false;
-    opts.cn = ('cname' in tmp_opts) ? tmp_opts['cname'] : 'imgc';
     opts.cr = ('create_cb' in tmp_opts) ? tmp_opts['create_cb'] : false,
     opts.de = ('destroy_cb' in tmp_opts) ? tmp_opts['destroy_cb'] : false,
     opts.mw = ('max_width' in tmp_opts) ? tmp_opts['max_width'] : 500;
@@ -70,7 +69,7 @@ var ImageCropper = (function() {
 
     src_el = document.querySelector(selector);
     //  Add classname only if necessary
-    src_el.className += (' '+src_el.className+' ').indexOf(' '+opts.cn+' ') > -1 ? '' : (' ' + opts.cn);
+    src_el.className += (' imgc ').indexOf(' '+opts.cn+' ') > -1 ? '' : (' imgc');
 
     img = new Image();
     img.addEventListener('load', function(evt) {
@@ -88,11 +87,11 @@ var ImageCropper = (function() {
     var w = img.width;
     var h = img.height;
     if(w > opts.mw){
-      h = Math.floor( opts.mw * h / w );
+      h = ~~(opts.mw*h/w);
       w = opts.mw
     }
     if(h > opts.mh){
-      w = Math.floor( opts.mh * w / h );
+      w = ~~(opts.mh*w/h);
       h = opts.mh;
     }
 
@@ -126,7 +125,7 @@ var ImageCropper = (function() {
 
     handles = [];
     for (var i = 0; i < 8; i++) {
-      handles.push(new Handle(Math.floor(i/4), i%4, handles_cbs[i]));
+      handles.push(new Handle(~~(i/4), i%4, handles_cbs[i]));
       handles_wrap.appendChild(handles[i].el);
     }
 
