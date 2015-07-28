@@ -59,14 +59,18 @@ var ImageCropper = (function() {
 
   function ImageCropper(selector, img_src, tmp_opts) {
     if(!img_src || !selector) return;
-    src_el = document.querySelector(selector);
-    //  Add classname only if necessary
-    src_el.className += (' '+src_el.className+' ').indexOf(' imgc ') > -1 ? '' : ' imgc';
     //  Parse opts
     tmp_opts = tmp_opts ? tmp_opts : {};
-    opts['update'] = ('update' in tmp_opts) ? tmp_opts['update'] : false;
-    opts['max_width'] = ('max_width' in tmp_opts) ? tmp_opts['max_width'] : 500;
-    opts['max_height'] = ('max_height' in tmp_opts) ? tmp_opts['max_height'] : 500;
+    opts.up = ('update' in tmp_opts) ? tmp_opts['update'] : false;
+    opts.cn = ('cname' in tmp_opts) ? tmp_opts['cname'] : 'imgc';
+    opts.cr = ('create_cb' in tmp_opts) ? tmp_opts['create_cb'] : false,
+    opts.de = ('destroy_cb' in tmp_opts) ? tmp_opts['destroy_cb'] : false,
+    opts.mw = ('max_width' in tmp_opts) ? tmp_opts['max_width'] : 500;
+    opts.mh = ('max_height' in tmp_opts) ? tmp_opts['max_height'] : 500;
+
+    src_el = document.querySelector(selector);
+    //  Add classname only if necessary
+    src_el.className += (' '+src_el.className+' ').indexOf(' '+opts.cn+' ') > -1 ? '' : (' ' + opts.cn);
 
     img = new Image();
     img.addEventListener('load', function(evt) {
@@ -83,13 +87,13 @@ var ImageCropper = (function() {
     if(initialized) return;
     var w = img.width;
     var h = img.height;
-    if(w > opts['max_width']){
-      h = Math.floor( opts['max_width'] * h / w );
-      w = opts['max_width']
+    if(w > opts.mw){
+      h = Math.floor( opts.mw * h / w );
+      w = opts.mw
     }
-    if(h > opts['max_height']){
-      w = Math.floor( opts['max_height'] * w / h );
-      h = opts['max_height'];
+    if(h > opts.mh){
+      w = Math.floor( opts.mh * w / h );
+      h = opts.mh;
     }
 
     src_el.style.width = w + 'px';
@@ -130,6 +134,7 @@ var ImageCropper = (function() {
 
     initialized = true;
     draw();
+    if(opts.cr) { opts.cr(dim); }
   };
 
   ImageCropper.prototype.destroy = function() {
@@ -140,6 +145,7 @@ var ImageCropper = (function() {
 
     canvas = img = handles_wrap = handles = overlay = overlay_el = null;
     initialized = false;
+    if(opts.de) { opts.de(); }
   };
 
   ImageCropper.prototype.crop = function(mime_type, quality) {
@@ -183,7 +189,7 @@ var ImageCropper = (function() {
 
     overlay_el.setAttribute('d', 'M 0 0 v' + src_dim('height') + 'h' + src_dim('width') + 'v' + -src_dim('height') + 'H-0zM' + dim.x + ' ' + dim.y + 'h' + dim.w + 'v' + dim.h + 'h-' + dim.w + 'V-' + dim.h + 'z');
 
-    if(opts['update']) { opts['update'](dim); }
+    if(opts.up) { opts.up(dim); }
   };
 
   function update(evt) {
