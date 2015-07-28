@@ -20,5 +20,5 @@
   "ignore": [
     "node_modules",
     "example"
-  ],
+  ]
 }
