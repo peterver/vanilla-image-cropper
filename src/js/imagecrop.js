@@ -55,12 +55,8 @@ module.exports = (function() {
   var src_el;
   var src_dim = function(val) {return src_el.getBoundingClientRect()[val];};
 
-  var handles     = [];
   var handles_wrap;
-
-  var overlay;
   var overlay_el;
-
   var canvas        = null;
 
   var initialized   = false;
@@ -130,7 +126,7 @@ module.exports = (function() {
     src_el.appendChild(img);
 
     //  Build overlay
-    overlay = document.createElementNS('http://www.w3.org/2000/svg','svg');
+    var overlay = document.createElementNS('http://www.w3.org/2000/svg','svg');
     overlay.setAttribute('height',h);
     overlay.setAttribute('width',w);
     src_el.appendChild(overlay);
@@ -144,10 +140,9 @@ module.exports = (function() {
     handles_wrap.className = 'imgc-handles';
     src_el.appendChild(handles_wrap);
 
-    handles = [];
     for (var i = 0; i < 8; i++) {
-      handles.push(new Handle(~~(i/4), i%4, handles_cbs[i]));
-      handles_wrap.appendChild(handles[i].el);
+      var handle = new Handle(~~(i/4), i%4, handles_cbs[i]);
+      handles_wrap.appendChild(handle.el);
     }
 
     src_el.addEventListener('mousedown', master_mousedown);
@@ -165,7 +160,7 @@ module.exports = (function() {
       src_el.removeEventListener('mousedown', master_mousedown);
 
       while (src_el.firstChild) { src_el.removeChild(src_el.firstChild); }
-      src_el = canvas = img = handles_wrap = handles = overlay = overlay_el = null;
+      src_el = canvas = img = handles_wrap = overlay_el = null;
     }
 
     initialized = false;
