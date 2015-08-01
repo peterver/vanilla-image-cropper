@@ -12,37 +12,33 @@ module.exports = (function() {
 
   //  Callback handlers used for every handle and their cbs
   var handles_cbs = [
-    function (e) {  //  TOP LEFT
-        dim.w += dim.x - e.x;
-        dim.h += dim.y - e.y;
-        dim.x = e.x;
-        dim.y = e.y;
+    function (e) {  //  TOP LEFT [0]
+      handles_cbs[7](e);
+      handles_cbs[4](e);
     },
-    function (e) {  //  TOP RIGHT
+    function (e) {  //  TOP RIGHT [1]
       dim.w = e.x - dim.x;
+      handles_cbs[4](e);
+    },
+    function (e) {  //  BOTTOM RIGHT [2]
+      dim.w = e.x - dim.x;
+      dim.h = e.y - dim.y;
+    },
+    function (e) {  //  BOTTOM LEFT [3]
+      handles_cbs[7];
+      dim.h = e.y - dim.y;
+    },
+    function (e) {  //  TOP [4]
       dim.h += dim.y - e.y;
       dim.y = e.y;
     },
-    function (e) {  //  BOTTOM RIGHT
-      dim.w = e.x - dim.x;
-      dim.h = e.y - dim.y;
-    },
-    function (e) {  //  BOTTOM LEFT
-      dim.w += dim.x - e.x;
-      dim.x = e.x;
-      dim.h = e.y - dim.y;
-    },
-    function (e) {  //  TOP
-      dim.h += dim.y - e.y;
-      dim.y = e.y;
-    },
-    function (e) {  //  RIGHT
+    function (e) {  //  RIGHT [5]
       dim.w = e.x - dim.x;
     },
-    function (e) {  //  BOTTOM
+    function (e) {  //  BOTTOM [6]
       dim.h = e.y - dim.y;
     },
-    function (e) {  //  LEFT
+    function (e) {  //  LEFT [7]
       dim.w += dim.x - e.x;
       dim.x = e.x;
     }
