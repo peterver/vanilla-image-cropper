@@ -1,5 +1,6 @@
 module.exports = (function() {
 
+  //  Used to setup the options for the ImageCropper
   var pos_opts = {
     'update': ['up',false],
     'create_cb' : ['cr',false],
@@ -8,6 +9,7 @@ module.exports = (function() {
     'max_height' : ['mh',500]
   };
 
+  //  Callback handlers used for every handle and their cbs
   var handles_cbs = [
     function (e) {  //  TOP LEFT
         dim.w += dim.x - e.x;
@@ -99,6 +101,7 @@ module.exports = (function() {
     if(initialized) return;
     if(!src_el) setParent(selector);
 
+    //  Calculate width and height based on constrained max-width and max-height
     var w = img.width;
     var h = img.height;
     if(w > opts.mw) {
@@ -171,14 +174,10 @@ module.exports = (function() {
     if(!mime_type || (mime_type !== 'image/jpeg' && mime_type !== 'image/png')) {mime_type = 'image/jpeg';}
     if(!quality || quality < 0 || quality > 1) {quality = 1;}
 
-    var tmp = { x: dim.x, y: dim.y, w: dim.w , h: dim.h };
-
-    canvas.setAttribute('width', tmp.w);
-    canvas.setAttribute('height', tmp.h);
+    canvas.setAttribute('width', dim.w);
+    canvas.setAttribute('height', dim.h);
     var ctx = canvas.getContext('2d');
-    ctx.imageSmoothingEnabled = false;
-    //  TODO !
-    ctx.drawImage(img, tmp.x, tmp.y, tmp.w, tmp.h, 0, 0, tmp.w, tmp.h);
+    ctx.drawImage(img, dim.x, dim.y, dim.w, dim.h, 0, 0, dim.w, dim.h);
     return canvas.toDataURL(mime_type, quality);
   };
 

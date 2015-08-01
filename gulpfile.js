@@ -21,7 +21,7 @@ var paths = {
 };
 
 var onError = function (err) {
-  $.notify({title: 'Gulp', message: 'Error: <%= err.message %>'})(err);
+  $.notify({title: 'Gulp', message: 'Error: <%= err.message %>'});
 };
 
 //  Javascript
