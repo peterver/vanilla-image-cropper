@@ -190,6 +190,7 @@ module.exports = (function() {
   };
 
   function collisionCheck() {
+    if(opts.fs) { dim.w = dim.h; }
     dim.w = (dim.w < 32) ? 32 : dim.w;
     dim.h = (dim.h < 32) ? 32 : dim.h;
     dim.x = (dim.x < 0) ? 0 : (dim.x + dim.w > src_dim('width') ? (src_dim('width') - dim.w) : dim.x);
