@@ -136,8 +136,8 @@ module.exports = (function() {
     handles_wrap.className = 'imgc-handles';
     src_el.appendChild(handles_wrap);
 
-    for (var i = 0; i < 8; i++) {
-      var handle = new Handle(~~(i/4), i%4, handles_cbs[i]);
+    for (var i = 0; i < (opts.fs ? 4 : 8); i++) {
+      var handle = new Handle(opts.fs ? 0 : ~~(i/4), i%4, handles_cbs[i]);
       handles_wrap.appendChild(handle.el);
     }
 
