@@ -1,13 +1,13 @@
 module.exports = (function() {
 
-//
-//  VARIABLES
-//
+  var pos_opts = {
+    'update': ['up',false],
+    'create_cb' : ['cr',false],
+    'destroy_cb' : ['de', false],
+    'max_width' : ['mw',500],
+    'max_height' : ['mh',500]
+  };
 
-  var src_el;
-  var src_dim = function(val) {return src_el.getBoundingClientRect()[val];};
-
-  var handles     = [];
   var handles_cbs = [
     function (e) {  //  TOP LEFT
         dim.w += dim.x - e.x;
@@ -44,6 +44,15 @@ module.exports = (function() {
       dim.x = e.x;
     }
   ];
+
+//
+//  VARIABLES
+//
+
+  var src_el;
+  var src_dim = function(val) {return src_el.getBoundingClientRect()[val];};
+
+  var handles     = [];
   var handles_wrap;
 
   var overlay;
@@ -73,11 +82,7 @@ module.exports = (function() {
 
   var parseOptions = function(tmp_opts) {
     tmp_opts = tmp_opts ? tmp_opts : {};
-    opts.up = ('update' in tmp_opts) ? tmp_opts['update'] : false;
-    opts.cr = ('create_cb' in tmp_opts) ? tmp_opts['create_cb'] : false,
-    opts.de = ('destroy_cb' in tmp_opts) ? tmp_opts['destroy_cb'] : false,
-    opts.mw = ('max_width' in tmp_opts) ? tmp_opts['max_width'] : 500;
-    opts.mh = ('max_height' in tmp_opts) ? tmp_opts['max_height'] : 500;
+    for (var key in pos_opts) { opts[pos_opts[key][0]] = (key in tmp_opts) ? tmp_opts[key] : pos_opts[key][1]; }
   };
 
   var getParent = function(selector) {
