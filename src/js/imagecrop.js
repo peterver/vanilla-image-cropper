@@ -6,7 +6,8 @@ module.exports = (function() {
     'create_cb' : ['cr',false],
     'destroy_cb' : ['de', false],
     'max_width' : ['mw',500],
-    'max_height' : ['mh',500]
+    'max_height' : ['mh',500],
+    'fixed_size' : ['fs',false]
   };
 
   //  Callback handlers used for every handle and their cbs
@@ -102,7 +103,7 @@ module.exports = (function() {
     if(initialized) return;
     if(!src_el) setParent(selector);
 
-    //  Calculate width and height based on constrained max-width and max-height
+    //  Calculate width and height based on max-width and max-height
     var w = img.width, h = img.height;
 
     if(w > opts.mw) {
@@ -177,7 +178,6 @@ module.exports = (function() {
 
     canvas.setAttribute('width', dim.w);
     canvas.setAttribute('height', dim.h);
-    console.log(img.naturalWidth/dim.w);
     var ctx = canvas.getContext('2d');
     ctx.drawImage(img,
       w_h_ratio.w * dim.x, w_h_ratio.h * dim.y, w_h_ratio.w * dim.w, w_h_ratio.h * dim.h,
@@ -250,9 +250,6 @@ module.exports = (function() {
 
   function Handle(t, i, cb) {
     var has_focus   = false;
-    var cb          = cb;
-    var type        = t;
-    var dir         = i;
 
     //  EVENTS
 
@@ -280,7 +277,7 @@ module.exports = (function() {
     };
 
     this.el = document.createElement('span');
-    this.el.className = 'imgc-handles-el-' + type + '-' + dir;
+    this.el.className = 'imgc-handles-el-' + t + '-' + i;
     this.el.addEventListener('mousedown', handle_down);
   };
 
