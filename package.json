@@ -20,6 +20,7 @@
     "gulp-jshint": "^1.11.2",
     "gulp-load-plugins": "^1.0.0-rc.1",
     "gulp-notify": "^2.2.0",
+    "gulp-plumber": "^1.0.1",
     "gulp-rename": "^1.2.2",
     "gulp-sass": "^2.0.3",
     "gulp-scss-lint": "^0.2.1",
