@@ -62,5 +62,8 @@ img_c = new ImageCropper('#test-imagecrop', 'img.jpg');
 img_c.destroy();
 ```
 
+or you can just delete the dom node that the image cropper was created in ( or its parent ),
+and the imagecropper instance will destroy itself :]
+
 # Example
 For an example, check out the example folder in the repository
