@@ -12,10 +12,15 @@ To get started, you need only do a couple things
 3. Run the imagecropper function with the url for the image that needs to be cropped
 4. Create a button to call the crop function on the imagecropper.
 
+# Requirements
+
+* Browserify ( or something else that works with module.exports ) 
+
 # Creating an imagecropper instance
 Creating an imagecropper is done like so 
 
 ```javascript
+var ImageCropper = require('./imagecrop.min.js');
 img_c = new ImageCropper(selector, image_url, options);
 ```
 
