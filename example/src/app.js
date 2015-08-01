@@ -23,7 +23,7 @@ var onCropHandler = function() {
 var onCreateHandler = function() {
   if(is_active) { return; }
 
-  new ImageCropper('.test-imagecrop', 'img.jpg', {
+  new ImageCropper('.test-imagecrop', 'img2.jpg', {
     update: onUpdateHandler
   });
   destroy_btn.style.display = 'initial';

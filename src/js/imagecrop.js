@@ -67,6 +67,7 @@ module.exports = (function() {
   var dim           = {x: 0, y: 0, w: 80, h: 80};
   var opts          = {};
   var img           = null;
+  var ratio         = {w:1,h:1};
 
   function ImageCropper(selector, img_src, tmp_opts) {
     if(!img_src || !selector) return;
@@ -102,8 +103,8 @@ module.exports = (function() {
     if(!src_el) setParent(selector);
 
     //  Calculate width and height based on constrained max-width and max-height
-    var w = img.width;
-    var h = img.height;
+    var w = img.width, h = img.height;
+
     if(w > opts.mw) {
       h = ~~(opts.mw*h/w);
       w = opts.mw
@@ -112,6 +113,8 @@ module.exports = (function() {
       w = ~~(opts.mh*w/h);
       h = opts.mh;
     }
+    //  Set w_h_ratio to use in processing afterwards ( this is based on original image size )
+    w_h_ratio = {w: img.naturalWidth/w, h: img.naturalHeight/h};
 
     src_el.style.width = w + 'px';
     src_el.style.height = h + 'px';
@@ -122,15 +125,13 @@ module.exports = (function() {
     canvas.setAttribute('width', w);
     canvas.setAttribute('height', h);
     src_el.appendChild(canvas);
-
+    //  Image for seeing
     src_el.appendChild(img);
-    img.width = w;
-    img.height = h;
 
     //  Build overlay
     overlay = document.createElementNS('http://www.w3.org/2000/svg','svg');
-    overlay.setAttribute('height',src_dim('height'));
-    overlay.setAttribute('width',src_dim('width'));
+    overlay.setAttribute('height',h);
+    overlay.setAttribute('width',w);
     src_el.appendChild(overlay);
 
     overlay_el = document.createElementNS('http://www.w3.org/2000/svg', 'path');
@@ -176,8 +177,12 @@ module.exports = (function() {
 
     canvas.setAttribute('width', dim.w);
     canvas.setAttribute('height', dim.h);
+    console.log(img.naturalWidth/dim.w);
     var ctx = canvas.getContext('2d');
-    ctx.drawImage(img, dim.x, dim.y, dim.w, dim.h, 0, 0, dim.w, dim.h);
+    ctx.drawImage(img,
+      w_h_ratio.w * dim.x, w_h_ratio.h * dim.y, w_h_ratio.w * dim.w, w_h_ratio.h * dim.h,
+      0, 0, dim.w, dim.h
+    );
     return canvas.toDataURL(mime_type, quality);
   };
 
