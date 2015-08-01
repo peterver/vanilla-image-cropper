@@ -1,4 +1,4 @@
-var ImageCropper = (function() {
+module.exports = (function() {
 
 //
 //  VARIABLES
@@ -60,43 +60,55 @@ var ImageCropper = (function() {
   function ImageCropper(selector, img_src, tmp_opts) {
     if(!img_src || !selector) return;
     //  Parse opts
+    parseOptions(tmp_opts);
+    //  Get parent
+    getParent(selector);
+    //  Load image
+    img = new Image();
+    img.addEventListener('load', function(evt) {
+      this.create();
+    }.bind(this));
+    img.src = img_src;
+  };
+
+  var parseOptions = function(tmp_opts) {
     tmp_opts = tmp_opts ? tmp_opts : {};
     opts.up = ('update' in tmp_opts) ? tmp_opts['update'] : false;
     opts.cr = ('create_cb' in tmp_opts) ? tmp_opts['create_cb'] : false,
     opts.de = ('destroy_cb' in tmp_opts) ? tmp_opts['destroy_cb'] : false,
     opts.mw = ('max_width' in tmp_opts) ? tmp_opts['max_width'] : 500;
     opts.mh = ('max_height' in tmp_opts) ? tmp_opts['max_height'] : 500;
+  };
 
+  var getParent = function(selector) {
+    if(src_el) { this.destroy(); }
     src_el = document.querySelector(selector);
-    //  Add classname only if necessary
     src_el.className += (' imgc ').indexOf(' '+opts.cn+' ') > -1 ? '' : (' imgc');
-
-    img = new Image();
-    img.addEventListener('load', function(evt) {
-      this.create();
-    }.bind(this));
-    img.src = img_src;
   }
 
 //
 //  PUBLIC FUNCTIONALITY
 //
 
-  ImageCropper.prototype.create = function() {
+  ImageCropper.prototype.create = function(selector) {
     if(initialized) return;
+    if(!src_el) setParent(selector);
+
     var w = img.width;
     var h = img.height;
-    if(w > opts.mw){
+    if(w > opts.mw) {
       h = ~~(opts.mw*h/w);
       w = opts.mw
     }
-    if(h > opts.mh){
+    if(h > opts.mh) {
       w = ~~(opts.mh*w/h);
       h = opts.mh;
     }
 
     src_el.style.width = w + 'px';
     src_el.style.height = h + 'px';
+    src_el.addEventListener('DOMNodeRemoved', this.destroy, false);
+    src_el.addEventListener('DOMNodeRemovedFromDocument', this.destroy, false);
 
     //  Canvas for cropping
     canvas = document.createElement('canvas');
@@ -139,10 +151,15 @@ var ImageCropper = (function() {
   ImageCropper.prototype.destroy = function() {
     if(!initialized) return;
 
-    while (src_el.firstChild) { src_el.removeChild(src_el.firstChild); }
-    src_el.removeEventListener('mousedown', master_mousedown);
+    if(src_el) {
+      src_el.removeEventListener('DOMNodeRemoved', this.destroy);
+      src_el.removeEventListener('DOMNodeRemovedFromDocument', this.destroy);
+      src_el.removeEventListener('mousedown', master_mousedown);
 
-    canvas = img = handles_wrap = handles = overlay = overlay_el = null;
+      while (src_el.firstChild) { src_el.removeChild(src_el.firstChild); }
+      src_el = canvas = img = handles_wrap = handles = overlay = overlay_el = null;
+    }
+
     initialized = false;
     if(opts.de) { opts.de(); }
   };
@@ -165,6 +182,7 @@ var ImageCropper = (function() {
 //
 //  EVENTS
 //
+
   function convertGlobalToLocal(e) {
     var x = e.clientX - src_dim('left'), y = e.clientY - src_dim('top');
     return {
