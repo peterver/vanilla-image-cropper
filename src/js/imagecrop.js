@@ -112,8 +112,7 @@ module.exports = (function() {
 
     src_el.style.width = w + 'px';
     src_el.style.height = h + 'px';
-    src_el.addEventListener('DOMNodeRemoved', this.destroy, false);
-    src_el.addEventListener('DOMNodeRemovedFromDocument', this.destroy, false);
+    src_el.addEventListener('DOMNodeRemovedFromDocument', this.destroy);
 
     //  Canvas for cropping
     canvas = document.createElement('canvas');
@@ -157,7 +156,6 @@ module.exports = (function() {
     if(!initialized) return;
 
     if(src_el) {
-      src_el.removeEventListener('DOMNodeRemoved', this.destroy);
       src_el.removeEventListener('DOMNodeRemovedFromDocument', this.destroy);
       src_el.removeEventListener('mousedown', master_mousedown);
 
