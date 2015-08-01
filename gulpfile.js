@@ -3,6 +3,8 @@
  */
 
 var gulp = require('gulp');
+var browserify = require('browserify');
+var source = require('vinyl-source-stream');
 
 var $ = require('gulp-load-plugins')({
     pattern: ['*'],
@@ -13,12 +15,13 @@ var paths = {
     js          : ['src/js/**/**.js'],
     js_dest     : 'build/',
     scss        : ['src/sass/**/**.scss'],
-    scss_dest   : 'build/'
+    scss_dest   : 'build/',
+    example     : 'example/src/**.js',
+    example_dest: 'example/src/'
 };
 
 var onError = function (err) {
   $.notify({title: 'Gulp', message: 'Error: <%= err.message %>'})(err);
-  this.emit('end');
 };
 
 //  Javascript
@@ -30,7 +33,8 @@ gulp.task('js', function (cb) {
     .pipe($.notify({title: 'jshint', message: 'jshint - passed'}))
     .pipe($.uglify())
     .pipe($.rename({suffix: '.min'}))
-    .pipe(gulp.dest(paths.js_dest));
+    .pipe(gulp.dest(paths.js_dest))
+    .pipe(gulp.dest(paths.example_dest));
 });
 
 //  SASS
@@ -42,6 +46,15 @@ gulp.task('scss', function (cb) {
     .pipe($.autoprefixer())
     .pipe($.rename({suffix: '.min'}))
     .pipe(gulp.dest(paths.scss_dest));
+});
+
+//  EXAMPLE
+
+gulp.task('example', function (cb) {
+  return browserify('example/src/app.js')
+    .bundle()
+    .pipe(source('app.js'))
+    .pipe(gulp.dest('./example/'));
 });
 
 //  Just throw a quick notification in the CLI when everything was built.
@@ -59,6 +72,7 @@ gulp.task('build', [], function (cb) {
 gulp.task('watch', function (cb) {
     gulp.watch(paths.scss, ['scss']);
     gulp.watch(paths.js, ['js']);
+    gulp.watch(paths.example, ['js', 'scss', 'example']);
     $.util.log($.util.colors.magenta('Watching for changes…'));
     cb();
 });
