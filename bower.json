@@ -19,6 +19,9 @@
   "homepage": "https://github.com/peterver/image-crop",
   "ignore": [
     "node_modules",
-    "example"
+    "example",
+    "gulpfile.js",
+    "**/.*",
+    "package.json"
   ]
 }
