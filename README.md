@@ -7,21 +7,30 @@ with zero-dependency injection
 
 To get started, you need only do a couple things 
 
-1. Include the minified js and css files into your dom (or build process)
-2. Create a HTML element for the imagecropper to be built into 
-3. Run the imagecropper function with the url for the image that needs to be cropped
-4. Create a button to call the crop function on the imagecropper.
+### Browserify
 
-# Requirements
+Include the imagecrop.min.js file into your js build process
 
-* Browserify ( or something else that works with module.exports ) 
+### Plain old javascript without fancy build ?
+
+Include the imagecrop_regular.min.js file as a link
+
+```html
+<script type="text/javascript" src="yourscriptsfolder/imagecrop_regular.min.js"></script>
+```
 
 # Creating an imagecropper instance
-Creating an imagecropper is done like so 
+
+If you're using browserify Creating an imagecropper is done like so 
 
 ```javascript
 var ImageCropper = require('./imagecrop.min.js');
 img_c = new ImageCropper(selector, image_url, options);
+```
+
+If you're using plain old javascript without a build process
+```javascript
+var img_c = new ImageCropper(selector, image_url, options);
 ```
 
 ### selector
@@ -32,7 +41,7 @@ It should point to the element where you want the imagecropper to be located.
 ### image_url
 The image_url should point to the location of the image that you want to have cropped. Meaning the url of the source image.
 
-### options (update, max_width, max_height)
+### options
 There are several possible options defined for the image cropper 
 
 * update
@@ -41,6 +50,12 @@ There are several possible options defined for the image cropper
   * Sets the maximum width that the imagecropper can become
 * max_height
   * Sets the maximum height for the imagecropper
+* create_cb
+  * A callback function that is called when the imagecropper has finished creating, this will pass an object containing the dimensions of the imagecropper ( for styling or positioning purposes )
+* destroy_cb
+  * A callback function that is called when the imagecropper has finished destroying itself
+* fixed_size
+  * A boolean ( true | false ), that tells the image cropper if it should constrain the size of the cropped area to be fixed or not ?
 
 # Cropping an image (mime_type, quality)
 When you're all done with your changes, you can crop the image by calling the **crop** function.
