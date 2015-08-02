@@ -132,14 +132,13 @@ module.exports = (function() {
     src_el.appendChild(handles_wrap);
 
     for (var i = 0; i < (opts.fs ? 4 : 8); i++) {
-      var handle = new Handle(opts.fs ? 0 : ~~(i/4), i%4, handles_cbs[i]);
-      handles_wrap.appendChild(handle.el);
+      handles_wrap.appendChild(new Handle(opts.fs ? 0 : ~~(i/4), i%4, handles_cbs[i]));
     }
 
-    src_el.addEventListener('mousedown', master_mousedown);
+    src_el.addEventListener('mousedown', document_mousedown);
 
     initialized = true;
-    draw();
+    render();
     if(opts.cr) { opts.cr(dim); }
   };
 
@@ -148,7 +147,7 @@ module.exports = (function() {
 
     if(src_el) {
       src_el.removeEventListener('DOMNodeRemovedFromDocument', this.destroy);
-      src_el.removeEventListener('mousedown', master_mousedown);
+      src_el.removeEventListener('mousedown', document_mousedown);
 
       while (src_el.firstChild) { src_el.removeChild(src_el.firstChild); }
       src_el = canvas = img = handles_wrap = overlay_el = null;
@@ -173,72 +172,68 @@ module.exports = (function() {
   };
 
 //
-//  UTILITY
+//  UTILITY / DIMENSIONAL CHECKS
 //
 
+    function convertGlobalToLocal(e) {
+      var d = src_el.getBoundingClientRect();
+      var x = e.clientX - d.left, y = e.clientY - d.top;
+      return {
+        x : x < 0 ? 0 : (x > d.width ? d.width : x),
+        y : y < 0 ? 0 : (y > d.height ? d.height : y)
+      }
+    };
 
+    function render() {
+      var d = src_el.getBoundingClientRect();
+      //  Collision check
+      if(opts.fs) { dim.w = dim.h; }
+      dim.w = (dim.w < 32) ? 32 : dim.w;
+      dim.h = (dim.h < 32) ? 32 : dim.h;
+      dim.x = (dim.x < 0) ? 0 : (dim.x + dim.w > d.width ? (d.width - dim.w) : dim.x);
+      dim.y = (dim.y < 0) ? 0 : (dim.y + dim.h > d.height ? (d.height - dim.h) : dim.y);
+
+      //  Draw
+      handles_wrap.style.top = dim.y + 'px';
+      handles_wrap.style.left = dim.x + 'px';
+      handles_wrap.style.width = dim.w + 'px';
+      handles_wrap.style.height = dim.h + 'px';
+
+      overlay_el.setAttribute('d', 'M 0 0 v' + d.height + 'h' + d.width + 'v' + -d.height + 'H-0zM' + dim.x + ' ' + dim.y + 'h' + dim.w + 'v' + dim.h + 'h-' + dim.w + 'V-' + dim.h + 'z');
+
+      if(opts.up) { opts.up(dim); }
+    };
+
+    function update(evt) {
+      evt = convertGlobalToLocal(evt);
+      dim.x = evt.x - dim.w*.5;
+      dim.y = evt.y - dim.h*.5;
+      render();
+    };
 
 //
 //  EVENTS
 //
 
-  function convertGlobalToLocal(e) {
-    var d = src_el.getBoundingClientRect();
-    var x = e.clientX - d.left, y = e.clientY - d.top;
-    return {
-      x : x < 0 ? 0 : (x > d.width ? d.width : x),
-      y : y < 0 ? 0 : (y > d.height ? d.height : y)
-    }
-  };
+    function document_mousedown(evt) {
+      if(has_focus) return;
+      document.addEventListener('mousemove', document_mousemove);
+      document.addEventListener('mouseup', window_blur);
+      update(evt);
+      has_focus = true;
+    };
 
-  function collisionCheck() {
-    var d = src_el.getBoundingClientRect();
-    if(opts.fs) { dim.w = dim.h; }
-    dim.w = (dim.w < 32) ? 32 : dim.w;
-    dim.h = (dim.h < 32) ? 32 : dim.h;
-    dim.x = (dim.x < 0) ? 0 : (dim.x + dim.w > d.width ? (d.width - dim.w) : dim.x);
-    dim.y = (dim.y < 0) ? 0 : (dim.y + dim.h > d.height ? (d.height - dim.h) : dim.y);
-  };
+    function window_blur(evt) {
+      if(!has_focus) return;
+      document.removeEventListener('mouseup', window_blur);
+      document.removeEventListener('mousemove', document_mousemove);
+      has_focus = false;
+    };
 
-  function draw() {
-    var d = src_el.getBoundingClientRect();
-    handles_wrap.style.top = dim.y + 'px';
-    handles_wrap.style.left = dim.x + 'px';
-    handles_wrap.style.width = dim.w + 'px';
-    handles_wrap.style.height = dim.h + 'px';
-
-    overlay_el.setAttribute('d', 'M 0 0 v' + d.height + 'h' + d.width + 'v' + -d.height + 'H-0zM' + dim.x + ' ' + dim.y + 'h' + dim.w + 'v' + dim.h + 'h-' + dim.w + 'V-' + dim.h + 'z');
-
-    if(opts.up) { opts.up(dim); }
-  };
-
-  function update(evt) {
-    evt = convertGlobalToLocal(evt);
-    dim.x = evt.x - dim.w*.5;
-    dim.y = evt.y - dim.h*.5;
-    collisionCheck();
-    draw();
-  };
-
-  function master_mousedown(evt) {
-    if(has_focus) return;
-    document.addEventListener('mousemove', master_mousemove);
-    document.addEventListener('mouseup', window_blur);
-    update(evt);
-    has_focus = true;
-  };
-
-  function window_blur(evt) {
-    if(!has_focus) return;
-    document.removeEventListener('mouseup', window_blur);
-    document.removeEventListener('mousemove', master_mousemove);
-    has_focus = false;
-  };
-
-  function master_mousemove(evt) {
-    if(!has_focus) return;
-    update(evt);
-  };
+    function document_mousemove(evt) {
+      if(!has_focus) return;
+      update(evt);
+    };
 
 //
 //  HANDLE
@@ -260,8 +255,7 @@ module.exports = (function() {
       e.stopPropagation();
       if(has_focus) {
         cb(convertGlobalToLocal(e));
-        collisionCheck();
-        draw();
+        render();
       }
     };
 
@@ -272,9 +266,10 @@ module.exports = (function() {
       document.removeEventListener('mousemove', handle_move);
     };
 
-    this.el = document.createElement('span');
-    this.el.className = 'imgc-handles-el-' + t + '-' + i;
-    this.el.addEventListener('mousedown', handle_down);
+    var el = document.createElement('span');
+    el.className = 'imgc-handles-el-' + t + '-' + i;
+    el.addEventListener('mousedown', handle_down);
+    return el;
   };
 
   return ImageCropper;
