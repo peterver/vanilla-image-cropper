@@ -49,7 +49,6 @@ module.exports = (function() {
 //
 
   var src_el;
-  var src_dim = function(val) {return src_el.getBoundingClientRect()[val];};
 
   var handles_wrap;
   var overlay_el;
@@ -64,10 +63,11 @@ module.exports = (function() {
 
   function ImageCropper(selector, img_src, tmp_opts) {
     if(!img_src || !selector) return;
-    //  Parse opts
-    parseOptions(tmp_opts);
+    //  Parse options
+    tmp_opts = tmp_opts ? tmp_opts : {};
+    for (var key in pos_opts) { opts[pos_opts[key][0]] = (key in tmp_opts) ? tmp_opts[key] : pos_opts[key][1]; }
     //  Get parent
-    getParent(selector);
+    setParent(selector);
     //  Load image
     img = new Image();
     img.addEventListener('load', function(evt) {
@@ -76,12 +76,7 @@ module.exports = (function() {
     img.src = img_src;
   };
 
-  var parseOptions = function(tmp_opts) {
-    tmp_opts = tmp_opts ? tmp_opts : {};
-    for (var key in pos_opts) { opts[pos_opts[key][0]] = (key in tmp_opts) ? tmp_opts[key] : pos_opts[key][1]; }
-  };
-
-  var getParent = function(selector) {
+  var setParent = function(selector) {
     if(src_el) { this.destroy(); }
     src_el = document.querySelector(selector);
     src_el.className += (' imgc ').indexOf(' '+opts.cn+' ') > -1 ? '' : (' imgc');
@@ -121,7 +116,7 @@ module.exports = (function() {
     //  Image for seeing
     src_el.appendChild(img);
 
-    //  Build overlay
+    //  Build SVG overlay
     var overlay = document.createElementNS('http://www.w3.org/2000/svg','svg');
     overlay.setAttribute('height',h);
     overlay.setAttribute('width',w);
@@ -178,32 +173,41 @@ module.exports = (function() {
   };
 
 //
+//  UTILITY
+//
+
+
+
+//
 //  EVENTS
 //
 
   function convertGlobalToLocal(e) {
-    var x = e.clientX - src_dim('left'), y = e.clientY - src_dim('top');
+    var d = src_el.getBoundingClientRect();
+    var x = e.clientX - d.left, y = e.clientY - d.top;
     return {
-      x : x < 0 ? 0 : (x > src_dim('width') ? src_dim('width') : x),
-      y : y < 0 ? 0 : (y > src_dim('height') ? src_dim('height') : y)
+      x : x < 0 ? 0 : (x > d.width ? d.width : x),
+      y : y < 0 ? 0 : (y > d.height ? d.height : y)
     }
   };
 
   function collisionCheck() {
+    var d = src_el.getBoundingClientRect();
     if(opts.fs) { dim.w = dim.h; }
     dim.w = (dim.w < 32) ? 32 : dim.w;
     dim.h = (dim.h < 32) ? 32 : dim.h;
-    dim.x = (dim.x < 0) ? 0 : (dim.x + dim.w > src_dim('width') ? (src_dim('width') - dim.w) : dim.x);
-    dim.y = (dim.y < 0) ? 0 : (dim.y + dim.h > src_dim('height') ? (src_dim('height') - dim.h) : dim.y);
+    dim.x = (dim.x < 0) ? 0 : (dim.x + dim.w > d.width ? (d.width - dim.w) : dim.x);
+    dim.y = (dim.y < 0) ? 0 : (dim.y + dim.h > d.height ? (d.height - dim.h) : dim.y);
   };
 
   function draw() {
+    var d = src_el.getBoundingClientRect();
     handles_wrap.style.top = dim.y + 'px';
     handles_wrap.style.left = dim.x + 'px';
     handles_wrap.style.width = dim.w + 'px';
     handles_wrap.style.height = dim.h + 'px';
 
-    overlay_el.setAttribute('d', 'M 0 0 v' + src_dim('height') + 'h' + src_dim('width') + 'v' + -src_dim('height') + 'H-0zM' + dim.x + ' ' + dim.y + 'h' + dim.w + 'v' + dim.h + 'h-' + dim.w + 'V-' + dim.h + 'z');
+    overlay_el.setAttribute('d', 'M 0 0 v' + d.height + 'h' + d.width + 'v' + -d.height + 'H-0zM' + dim.x + ' ' + dim.y + 'h' + dim.w + 'v' + dim.h + 'h-' + dim.w + 'V-' + dim.h + 'z');
 
     if(opts.up) { opts.up(dim); }
   };
