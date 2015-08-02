@@ -101,8 +101,8 @@ module.exports = (function() {
       w = ~~(opts.mh*w/h);
       h = opts.mh;
     }
-    //  Set w_h_ratio to use in processing afterwards ( this is based on original image size )
-    w_h_ratio = {w: img.naturalWidth/w, h: img.naturalHeight/h};
+    //  Set ratio to use in processing afterwards ( this is based on original image size )
+    ratio = {w: img.naturalWidth/w, h: img.naturalHeight/h};
 
     src_el.style.width = w + 'px';
     src_el.style.height = h + 'px';
@@ -139,7 +139,7 @@ module.exports = (function() {
 
     initialized = true;
     render();
-    if(opts.cr) { opts.cr(dim); }
+    if(opts.cr) { opts.cr({w: w, h: h}); }
   };
 
   ImageCropper.prototype.destroy = function() {
@@ -165,7 +165,7 @@ module.exports = (function() {
     canvas.setAttribute('height', dim.h);
     var ctx = canvas.getContext('2d');
     ctx.drawImage(img,
-      w_h_ratio.w * dim.x, w_h_ratio.h * dim.y, w_h_ratio.w * dim.w, w_h_ratio.h * dim.h,
+      ratio.w * dim.x, ratio.h * dim.y, ratio.w * dim.w, ratio.h * dim.h,
       0, 0, dim.w, dim.h
     );
     return canvas.toDataURL(mime_type, quality);
