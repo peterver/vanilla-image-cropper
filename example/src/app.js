@@ -54,7 +54,7 @@ destroy_btn.addEventListener('click', onDestroyHandler);
 
 img_c = new ImageCropper('.test-imagecrop', 'img.jpg', {
   update: onUpdateHandler,
-  fixed_size: true,
+  // fixed_size: true,
   create_cb: function(dim) {
     console.log('created - ', dim);
   },

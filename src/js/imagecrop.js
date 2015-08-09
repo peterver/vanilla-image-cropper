@@ -55,7 +55,6 @@ module.exports = (function() {
   var canvas        = null;
 
   var initialized   = false;
-  var has_focus     = false;
   var dim           = {x: 0, y: 0, w: 80, h: 80};
   var opts          = {};
   var img           = null;
@@ -216,22 +215,17 @@ module.exports = (function() {
 //
 
     function document_mousedown(evt) {
-      if(has_focus) return;
       document.addEventListener('mousemove', document_mousemove);
       document.addEventListener('mouseup', window_blur);
       update(evt);
-      has_focus = true;
     };
 
     function window_blur(evt) {
-      if(!has_focus) return;
       document.removeEventListener('mouseup', window_blur);
       document.removeEventListener('mousemove', document_mousemove);
-      has_focus = false;
     };
 
     function document_mousemove(evt) {
-      if(!has_focus) return;
       update(evt);
     };
 
@@ -240,28 +234,20 @@ module.exports = (function() {
 //
 
   function Handle(t, i, cb) {
-    var has_focus   = false;
-
-    //  EVENTS
-
     function handle_down(e) {
       e.stopPropagation();
-      has_focus = true;
       document.addEventListener('mouseup', handle_up);
       document.addEventListener('mousemove', handle_move);
     };
 
     function handle_move(e) {
       e.stopPropagation();
-      if(has_focus) {
-        cb(convertGlobalToLocal(e));
-        render();
-      }
+      cb(convertGlobalToLocal(e));
+      render();
     };
 
     function handle_up(e) {
       e.stopPropagation();
-      has_focus = false;
       document.removeEventListener('mouseup', handle_up);
       document.removeEventListener('mousemove', handle_move);
     };
