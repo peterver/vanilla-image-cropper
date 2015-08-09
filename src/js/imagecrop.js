@@ -17,30 +17,28 @@ module.exports = (function() {
       handles_cbs[4](e);
     },
     function (e) {  //  TOP RIGHT [1]
-      dim.w = e.x - dim.x;
+      handles_cbs[5](e);
       handles_cbs[4](e);
     },
     function (e) {  //  BOTTOM RIGHT [2]
-      dim.w = e.x - dim.x;
-      dim.h = e.y - dim.y;
+      handles_cbs[5](e);
+      handles_cbs[6](e);
     },
     function (e) {  //  BOTTOM LEFT [3]
-      handles_cbs[7];
-      dim.h = e.y - dim.y;
+      handles_cbs[7](e);
+      handles_cbs[6](e);
     },
     function (e) {  //  TOP [4]
-      dim.h += dim.y - e.y;
-      dim.y = e.y;
+      dim.y = (dim.y2 - e.y < 32 ? dim.y2 - 32 : e.y);
     },
     function (e) {  //  RIGHT [5]
-      dim.w = e.x - dim.x;
+      dim.x2 = (e.x - dim.x < 32 ? dim.x + 32 : e.x);
     },
     function (e) {  //  BOTTOM [6]
-      dim.h = e.y - dim.y;
+      dim.y2 = (e.y - dim.y < 32 ? dim.y + 32 : e.y);
     },
     function (e) {  //  LEFT [7]
-      dim.w += dim.x - e.x;
-      dim.x = e.x;
+      dim.x = (dim.x2 - e.x < 32 ? dim.x2 - 32 : e.x);
     }
   ];
 
@@ -55,7 +53,7 @@ module.exports = (function() {
   var canvas        = null;
 
   var initialized   = false;
-  var dim           = {x: 0, y: 0, w: 80, h: 80};
+  var dim           = {x: 0, y: 0, x2: 80, y2: 80, w: 80, h: 80};
   var opts          = {};
   var img           = null;
   var ratio         = {w:1,h:1};
@@ -137,7 +135,7 @@ module.exports = (function() {
     src_el.addEventListener('mousedown', document_mousedown);
 
     initialized = true;
-    render();
+    render({x: 0, y: 0});
     if(opts.cr) { opts.cr({w: w, h: h}); }
   };
 
@@ -185,12 +183,26 @@ module.exports = (function() {
 
     function render() {
       var d = src_el.getBoundingClientRect();
-      //  Collision check
-      if(opts.fs) { dim.w = dim.h; }
-      dim.w = (dim.w < 32) ? 32 : dim.w;
-      dim.h = (dim.h < 32) ? 32 : dim.h;
-      dim.x = (dim.x < 0) ? 0 : (dim.x + dim.w > d.width ? (d.width - dim.w) : dim.x);
-      dim.y = (dim.y < 0) ? 0 : (dim.y + dim.h > d.height ? (d.height - dim.h) : dim.y);
+      //  boundary check
+      if(dim.x < 0) {
+        dim.x = 0;
+        dim.x2 = dim.w;
+      }
+      if(dim.y < 0) {
+        dim.y = 0;
+        dim.y2 = dim.h;
+      }
+      if(dim.x2 > d.width) {
+        dim.x2 = d.width;
+        dim.x = dim.x2 - dim.w;
+      }
+      if(dim.y2 > d.height) {
+        dim.y2 = d.height;
+        dim.y = dim.y2 - dim.h;
+      }
+      //  Set w/h for future use
+      dim.w = dim.x2 - dim.x;
+      dim.h = dim.y2 - dim.y;
 
       //  Draw
       handles_wrap.style.top = dim.y + 'px';
@@ -203,10 +215,12 @@ module.exports = (function() {
       if(opts.up) { opts.up(dim); }
     };
 
-    function update(evt) {
-      evt = convertGlobalToLocal(evt);
-      dim.x = evt.x - dim.w*.5;
-      dim.y = evt.y - dim.h*.5;
+    function update(e) {
+      e = convertGlobalToLocal(e);
+      dim.x = e.x - dim.w*.5;
+      dim.y = e.y - dim.h*.5;
+      dim.x2 = e.x + dim.w*.5;
+      dim.y2 = e.y + dim.h*.5;
       render();
     };
 
@@ -214,19 +228,19 @@ module.exports = (function() {
 //  EVENTS
 //
 
-    function document_mousedown(evt) {
+    function document_mousedown(e) {
       document.addEventListener('mousemove', document_mousemove);
       document.addEventListener('mouseup', window_blur);
-      update(evt);
+      update(e);
     };
 
-    function window_blur(evt) {
+    function window_blur(e) {
       document.removeEventListener('mouseup', window_blur);
       document.removeEventListener('mousemove', document_mousemove);
     };
 
-    function document_mousemove(evt) {
-      update(evt);
+    function document_mousemove(e) {
+      update(e);
     };
 
 //
