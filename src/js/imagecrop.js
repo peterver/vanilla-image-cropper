@@ -5,6 +5,8 @@ module.exports = (function() {
     'update': ['up',false],
     'create_cb' : ['cr',false],
     'destroy_cb' : ['de', false],
+    'min_crop_width' : ['mcw', 32],
+    'min_crop_height' : ['mch', 32],
     'max_width' : ['mw',500],
     'max_height' : ['mh',500],
     'fixed_size' : ['fs',false]
@@ -13,32 +15,40 @@ module.exports = (function() {
   //  Callback handlers used for every handle and their cbs
   var handles_cbs = [
     function (e) {  //  TOP LEFT [0]
+      var orig = dim.x;
       handles_cbs[7](e);
-      handles_cbs[4](e);
+      if(!opts.fs) handles_cbs[4];
+      else dim.y += dim.x - orig;
     },
     function (e) {  //  TOP RIGHT [1]
+      var orig = dim.x2;
       handles_cbs[5](e);
-      handles_cbs[4](e);
+      if(!opts.fs) handles_cbs[4](e);
+      else dim.y -= dim.x2 - orig;
     },
     function (e) {  //  BOTTOM RIGHT [2]
+      var orig = dim.x2;
       handles_cbs[5](e);
-      handles_cbs[6](e);
+      if(!opts.fs) handles_cbs[6](e);
+      else dim.y2 += dim.x2 - orig;
     },
     function (e) {  //  BOTTOM LEFT [3]
+      var orig = dim.x;
       handles_cbs[7](e);
-      handles_cbs[6](e);
+      if(!opts.fs) handles_cbs[6](e);
+      else dim.y2 -= dim.x - orig;
     },
     function (e) {  //  TOP [4]
-      dim.y = (dim.y2 - e.y < 32 ? dim.y2 - 32 : e.y);
+      dim.y = (dim.y2 - e.y < opts.mch ? dim.y2 - opts.mch : e.y);  //  we need to do additional checks based on minimum crop height
     },
     function (e) {  //  RIGHT [5]
-      dim.x2 = (e.x - dim.x < 32 ? dim.x + 32 : e.x);
+      dim.x2 = (e.x - dim.x < opts.mcw ? dim.x + opts.mcw : e.x);  //  we need to do additional checks based on minimum crop width
     },
     function (e) {  //  BOTTOM [6]
-      dim.y2 = (e.y - dim.y < 32 ? dim.y + 32 : e.y);
+      dim.y2 = (e.y - dim.y < opts.mch ? dim.y + opts.mch : e.y);  //  we need to do additional checks based on minimum crop height
     },
     function (e) {  //  LEFT [7]
-      dim.x = (dim.x2 - e.x < 32 ? dim.x2 - 32 : e.x);
+      dim.x = (dim.x2 - e.x < opts.mcw ? dim.x2 - opts.mcw : e.x);  //  we need to do additional checks based on minimum crop width
     }
   ];
 
@@ -181,22 +191,25 @@ module.exports = (function() {
       }
     };
 
-    function render() {
-      var d = src_el.getBoundingClientRect();
-      //  boundary check
-      if(dim.x < 0) {
+    function render(isMoving) {
+      var d = src_el.getBoundingClientRect(), no_calc_top = false, no_calc_bot = false, isMoving = (isMoving) ? true : false;
+      //  boundary collision check
+      if(opts.fs && dim.x < 0 || dim.y < 0) no_calc_top = true;
+      if(opts.fs && dim.x2 > d.width || dim.y2 > d.height) no_calc_bot = true;
+
+      if((!no_calc_top || isMoving) && dim.x < 0) {
         dim.x = 0;
         dim.x2 = dim.w;
       }
-      if(dim.y < 0) {
+      if((!no_calc_top || isMoving) && dim.y < 0) {
         dim.y = 0;
         dim.y2 = dim.h;
       }
-      if(dim.x2 > d.width) {
+      if((!no_calc_bot || isMoving) && dim.x2 > d.width) {
         dim.x2 = d.width;
         dim.x = dim.x2 - dim.w;
       }
-      if(dim.y2 > d.height) {
+      if((!no_calc_bot || isMoving) && dim.y2 > d.height) {
         dim.y2 = d.height;
         dim.y = dim.y2 - dim.h;
       }
@@ -207,8 +220,8 @@ module.exports = (function() {
       //  Draw
       handles_wrap.style.top = dim.y + 'px';
       handles_wrap.style.left = dim.x + 'px';
-      handles_wrap.style.width = dim.w + 'px';
-      handles_wrap.style.height = dim.h + 'px';
+      handles_wrap.style.right = ~~(d.width - dim.x2) + 'px';
+      handles_wrap.style.bottom = ~~(d.height - dim.y2) + 'px';
 
       overlay_el.setAttribute('d', 'M 0 0 v' + d.height + 'h' + d.width + 'v' + -d.height + 'H-0zM' + dim.x + ' ' + dim.y + 'h' + dim.w + 'v' + dim.h + 'h-' + dim.w + 'V-' + dim.h + 'z');
 
@@ -221,7 +234,7 @@ module.exports = (function() {
       dim.y = e.y - dim.h*.5;
       dim.x2 = e.x + dim.w*.5;
       dim.y2 = e.y + dim.h*.5;
-      render();
+      render(true);
     };
 
 //
@@ -256,7 +269,8 @@ module.exports = (function() {
 
     function handle_move(e) {
       e.stopPropagation();
-      cb(convertGlobalToLocal(e));
+      e = convertGlobalToLocal(e);
+      cb(e);
       render();
     };
 
