@@ -21,11 +21,17 @@ $border-color: #fff;
   height: 100%;
 }
 
+.imgc svg path {
+  fill: rgba(0, 0, 0, .8);
+}
+
 .imgc-handles {
   position: absolute;
   top: 50%;
   left: 50%;
   cursor: move;
+  box-shadow: 4px 4px 0 0 rgba(0, 0, 0, .1);
+  border: 1px dotted rgba(255, 255, 255, .2);
 }
 
 *[class^='imgc-handles-el-'] {
@@ -33,6 +39,7 @@ $border-color: #fff;
   display: inline-block;
   z-index: 1;
   background: transparent;
+  box-shadow: 2px 2px 0 0 rgba(50, 50, 50, .2);
 }
 
 *[class^='imgc-handles-el-0-'] {

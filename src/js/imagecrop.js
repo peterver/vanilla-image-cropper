@@ -17,26 +17,48 @@ module.exports = (function() {
     function (e) {  //  TOP LEFT [0]
       var orig = dim.x;
       handles_cbs[7](e);
-      if(!opts.fs) handles_cbs[4];
-      else dim.y += dim.x - orig;
+      if(!opts.fs) handles_cbs[4](e);
+      else {
+        if(dim.y + dim.x - orig < 0) {
+          dim.x = orig - dim.y;
+          dim.y = 0;
+        } else dim.y += dim.x - orig;
+      }
     },
     function (e) {  //  TOP RIGHT [1]
       var orig = dim.x2;
       handles_cbs[5](e);
       if(!opts.fs) handles_cbs[4](e);
-      else dim.y -= dim.x2 - orig;
+      else {
+        if(dim.y - dim.x2 + orig < 0) {
+          dim.x2 = orig + dim.y;
+          dim.y = 0;
+        }  else dim.y -= dim.x2 - orig;
+      }
     },
     function (e) {  //  BOTTOM RIGHT [2]
       var orig = dim.x2;
       handles_cbs[5](e);
       if(!opts.fs) handles_cbs[6](e);
-      else dim.y2 += dim.x2 - orig;
+      else {
+        var src_dim = src_el.getBoundingClientRect();
+        if(dim.y2 + dim.x2 - orig > src_dim.height) {
+          dim.x2 = orig + (src_dim.height - dim.y2);
+          dim.y2 = src_dim.height;
+        } else dim.y2 += dim.x2 - orig;
+      }
     },
     function (e) {  //  BOTTOM LEFT [3]
       var orig = dim.x;
       handles_cbs[7](e);
       if(!opts.fs) handles_cbs[6](e);
-      else dim.y2 -= dim.x - orig;
+      else {
+        var src_dim = src_el.getBoundingClientRect();
+        if(dim.y2 + (orig - dim.x) > src_dim.height) {
+          dim.x = orig - (src_dim.height - dim.y2);
+          dim.y2 = src_dim.height;
+        } else dim.y2 -= dim.x - orig;
+      }
     },
     function (e) {  //  TOP [4]
       dim.y = (dim.y2 - e.y < opts.mch ? dim.y2 - opts.mch : e.y);  //  we need to do additional checks based on minimum crop height
@@ -60,7 +82,6 @@ module.exports = (function() {
 
   var handles_wrap;
   var overlay_el;
-  var canvas        = null;
 
   var initialized   = false;
   var dim           = {x: 0, y: 0, x2: 80, y2: 80, w: 80, h: 80};
@@ -73,6 +94,11 @@ module.exports = (function() {
     //  Parse options
     tmp_opts = tmp_opts ? tmp_opts : {};
     for (var key in pos_opts) { opts[pos_opts[key][0]] = (key in tmp_opts) ? tmp_opts[key] : pos_opts[key][1]; }
+    if(opts.mcw > 80) dim.x2 = dim.w = opts.mcw;
+    if(opts.mch > 80) dim.y2 = dim.h = opts.mch;
+    if(opts.fs) {
+      if(opts.mcw > 80 || opts.mch > 80) { dim.x2 = dim.y2 = dim.w = dim.h = (opts.mcw > opts.mch) ? opts.mcw : opts.mch; }
+    }
     //  Get parent
     setParent(selector);
     //  Load image
@@ -115,11 +141,6 @@ module.exports = (function() {
     src_el.style.height = h + 'px';
     src_el.addEventListener('DOMNodeRemovedFromDocument', this.destroy);
 
-    //  Canvas for cropping
-    canvas = document.createElement('canvas');
-    canvas.setAttribute('width', w);
-    canvas.setAttribute('height', h);
-    src_el.appendChild(canvas);
     //  Image for seeing
     src_el.appendChild(img);
 
@@ -130,7 +151,6 @@ module.exports = (function() {
     src_el.appendChild(overlay);
 
     overlay_el = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    overlay_el.style.fill = 'rgba(0, 0, 0, .8)';
     overlay.appendChild(overlay_el);
 
     //  Build handlers
@@ -145,7 +165,7 @@ module.exports = (function() {
     src_el.addEventListener('mousedown', document_mousedown);
 
     initialized = true;
-    render({x: 0, y: 0});
+    render();
     if(opts.cr) { opts.cr({w: w, h: h}); }
   };
 
@@ -157,7 +177,7 @@ module.exports = (function() {
       src_el.removeEventListener('mousedown', document_mousedown);
 
       while (src_el.firstChild) { src_el.removeChild(src_el.firstChild); }
-      src_el = canvas = img = handles_wrap = overlay_el = null;
+      src_el = img = handles_wrap = overlay_el = null;
     }
 
     initialized = false;
@@ -168,6 +188,7 @@ module.exports = (function() {
     if(!mime_type || (mime_type !== 'image/jpeg' && mime_type !== 'image/png')) {mime_type = 'image/jpeg';}
     if(!quality || quality < 0 || quality > 1) {quality = 1;}
 
+    var canvas = document.createElement('canvas');
     canvas.setAttribute('width', dim.w);
     canvas.setAttribute('height', dim.h);
     var ctx = canvas.getContext('2d');
@@ -192,24 +213,21 @@ module.exports = (function() {
     };
 
     function render(isMoving) {
-      var d = src_el.getBoundingClientRect(), no_calc_top = false, no_calc_bot = false, isMoving = (isMoving) ? true : false;
+      var d = src_el.getBoundingClientRect(), isMoving = (isMoving) ? true : false;
       //  boundary collision check
-      if(opts.fs && dim.x < 0 || dim.y < 0) no_calc_top = true;
-      if(opts.fs && dim.x2 > d.width || dim.y2 > d.height) no_calc_bot = true;
-
-      if((!no_calc_top || isMoving) && dim.x < 0) {
+      if(dim.x < 0) {
         dim.x = 0;
         dim.x2 = dim.w;
       }
-      if((!no_calc_top || isMoving) && dim.y < 0) {
+      if(dim.y < 0) {
         dim.y = 0;
         dim.y2 = dim.h;
       }
-      if((!no_calc_bot || isMoving) && dim.x2 > d.width) {
+      if(dim.x2 > d.width) {
         dim.x2 = d.width;
         dim.x = dim.x2 - dim.w;
       }
-      if((!no_calc_bot || isMoving) && dim.y2 > d.height) {
+      if(dim.y2 > d.height) {
         dim.y2 = d.height;
         dim.y = dim.y2 - dim.h;
       }
