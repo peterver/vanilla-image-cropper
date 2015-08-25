@@ -84,7 +84,7 @@ module.exports = (function() {
   var overlay_el;
 
   var initialized   = false;
-  var dim           = {x: 0, y: 0, x2: 80, y2: 80, w: 80, h: 80};
+  var dim           = {};
   var opts          = {};
   var img           = null;
   var ratio         = {w:1,h:1};
@@ -110,7 +110,7 @@ module.exports = (function() {
   };
 
   var setParent = function(selector) {
-    if(src_el) { this.destroy(); }
+    if(src_el) this.destroy();
     src_el = document.querySelector(selector);
     src_el.className += (' imgc ').indexOf(' '+opts.cn+' ') > -1 ? '' : (' imgc');
   }
@@ -165,6 +165,19 @@ module.exports = (function() {
     src_el.addEventListener('mousedown', document_mousedown);
 
     initialized = true;
+    //  Reset dim
+    dim = {x: 0, y: 0, x2: 0, y2: 0, w: 0, h: 0};
+    if(w === h) {
+      dim.x2 = dim.y2 = w;
+    } else if(w > h) {
+        dim.x2 = h;
+        dim.y2 = (opts.fs) ? h : h - (w - h);
+    } else if(h > w) {
+      dim.x2 = (opts.fs) ? w : w - (h - w);
+      dim.y2 = w;
+    }
+
+    //  Render
     render();
     if(opts.cr) { opts.cr({w: w, h: h}); }
   };
