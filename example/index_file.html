@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>
+			Imagecropper 0.1
+		</title>
+		<!-- META -->
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="description" content="">
+	    <meta name="viewport" content="width=device-width, initial-scale=1">
+	    <!-- STYLES -->
+	    <script type="text/javascript" src="../build/imagecrop_regular.min.js"></script>
+	    <link rel="stylesheet" href="../build/imagecrop.min.css">
+	    <style type="text/css">
+		    body {
+				background-color: #c9c9c9;
+			}
+		</style>
+	</head>
+	<body>
+		<label class="upload-image">
+			Upload file
+            <input type="file" accept="image/jpeg, image/png" />
+        </label>
+        <div id="test-image-cropper"></div>
+		<!-- SCRIPTS -->
+		<script type="text/javascript">
+			var imgc;
+			var onFileChange = function(evt) {
+                var reader = new FileReader();
+                
+                reader.onload = function (evt) {
+            		imgc = new ImageCropper('#test-image-cropper', evt.target.result, {
+		                max_width: 500,
+		                max_height: 500,
+		                min_crop_width: 100,
+		                min_crop_height: 100,
+		                fixed_size: true,
+		            });        
+                };
+
+                reader.readAsDataURL(evt.currentTarget.files[0]);
+            };
+
+			var el = document.querySelector('input[type="file"]');
+			el.addEventListener('change', onFileChange);
+		</script>
+	</body>
+</html>
