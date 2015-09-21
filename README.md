@@ -1,7 +1,7 @@
 # Lightweight Javascript ImageCropper 0.1
 
 A lightweight javascript imagecropper written in vanilla js
-with zero-dependency injection
+with zero-dependency injection that builds itself into an object.
 
 # Getting Started
 
@@ -25,12 +25,12 @@ If you're using browserify Creating an imagecropper is done like so
 
 ```javascript
 var ImageCropper = require('./imagecrop.min.js');
-img_c = new ImageCropper(selector, image_url, options);
+img_c = new ImageCropper(selector, image, options);
 ```
 
 If you're using plain old javascript without a build process
 ```javascript
-var img_c = new ImageCropper(selector, image_url, options);
+var img_c = new ImageCropper(selector, image, options);
 ```
 
 ### selector
@@ -38,8 +38,23 @@ The selector is an html5 css selector ( such as '#myTestDiv' ), basically anythi
 
 It should point to the element where you want the imagecropper to be located.
 
-### image_url
-The image_url should point to the location of the image that you want to have cropped. Meaning the url of the source image.
+### image
+The image can either be a javascript Image object loaded through a FileReader, this can be done like so
+```javascript
+var reader = new FileReader();
+
+reader.onload = function (evt) {
+  var img_c = new ImageCropper(..., evt.target.result, ...);
+};
+
+reader.readAsDataURL(...myfile...);
+```
+
+Or you can simply pass an existing url, for example 
+
+```javascript
+var img_c = new ImageCropper(..., '../assets/my_img.jpg', ...);
+```
 
 ### options
 There are several possible options defined for the image cropper 
@@ -50,6 +65,10 @@ There are several possible options defined for the image cropper
   * Sets the maximum width that the imagecropper can become
 * max_height
   * Sets the maximum height for the imagecropper
+* min_crop_width
+  * The minimum width that the cropped image can be
+* min_crop_height
+  * The miminum height that the cropped image can be
 * create_cb
   * A callback function that is called when the imagecropper has finished creating, this will pass an object containing the dimensions of the imagecropper ( for styling or positioning purposes )
 * destroy_cb
