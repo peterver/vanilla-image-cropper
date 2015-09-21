@@ -1,6 +1,6 @@
 {
   "name": "image_cropper",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "A lightweight javascript imagecropper",
   "main": "imagecrop.js",
   "scripts": {
