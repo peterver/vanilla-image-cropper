@@ -225,8 +225,11 @@ module.exports = (function() {
       }
     };
 
-    function render(isMoving) {
-      var d = src_el.getBoundingClientRect(), isMoving = (isMoving) ? true : false;
+    function render() {
+      //  Retrieve width/height
+      var w = parseInt(src_el.style.width);
+      var h = parseInt(src_el.style.height);
+
       //  boundary collision check
       if(dim.x < 0) {
         dim.x = 0;
@@ -236,12 +239,12 @@ module.exports = (function() {
         dim.y = 0;
         dim.y2 = dim.h;
       }
-      if(dim.x2 > d.width) {
-        dim.x2 = d.width;
+      if(dim.x2 > w) {
+        dim.x2 = w;
         dim.x = dim.x2 - dim.w;
       }
-      if(dim.y2 > d.height) {
-        dim.y2 = d.height;
+      if(dim.y2 > h) {
+        dim.y2 = h;
         dim.y = dim.y2 - dim.h;
       }
       //  Set w/h for future use
@@ -251,10 +254,10 @@ module.exports = (function() {
       //  Draw
       handles_wrap.style.top = dim.y + 'px';
       handles_wrap.style.left = dim.x + 'px';
-      handles_wrap.style.right = ~~(d.width - dim.x2) + 'px';
-      handles_wrap.style.bottom = ~~(d.height - dim.y2) + 'px';
+      handles_wrap.style.right = ~~(w - dim.x2) + 'px';
+      handles_wrap.style.bottom = ~~(h - dim.y2) + 'px';
 
-      overlay_el.setAttribute('d', 'M 0 0 v' + d.height + 'h' + d.width + 'v' + -d.height + 'H-0zM' + dim.x + ' ' + dim.y + 'h' + dim.w + 'v' + dim.h + 'h-' + dim.w + 'V-' + dim.h + 'z');
+      overlay_el.setAttribute('d', 'M 0 0 v' + h + 'h' + w + 'v' + -h + 'H-0zM' + dim.x + ' ' + dim.y + 'h' + dim.w + 'v' + dim.h + 'h-' + dim.w + 'V-' + dim.h + 'z');
 
       if(opts.up) { opts.up(dim); }
     };
@@ -265,7 +268,7 @@ module.exports = (function() {
       dim.y = e.y - dim.h*.5;
       dim.x2 = e.x + dim.w*.5;
       dim.y2 = e.y + dim.h*.5;
-      render(true);
+      render();
     };
 
 //
