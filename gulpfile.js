@@ -28,6 +28,7 @@ var onError = function (err) {
 gulp.task('js', function (cb) {
   return gulp.src(paths.js)
     .pipe($.plumber({errorHandler: onError}))
+    .pipe($.jshint('.jshintrc'))
     .pipe($.jshint.reporter('jshint-stylish'))
     .pipe($.jshint.reporter('fail'))
     .pipe($.notify({title: 'jshint', message: 'jshint - passed'}))
