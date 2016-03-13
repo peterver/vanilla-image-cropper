@@ -21,7 +21,7 @@ module.exports = (
 
         //  Used to setup the options for the ImageCropper
         var pos_opts = {
-            update : ['up', false],
+            update_cb : ['up', false],
             create_cb : ['cr', false],
             destroy_cb : ['de', false],
             min_crop_width : ['mcw', 32],
@@ -121,15 +121,6 @@ module.exports = (
 //  UTILITY / DIMENSIONAL CHECKS
 //
 
-        function setParent (selector) {
-            if (src_el) { this.destroy(); }
-            src_el = document.querySelector(selector);
-            src_el.className += (' imgc ').indexOf(' ' + opts.cn + ' ') > -1
-                ? ''
-                : ' imgc'
-            ;
-        }
-
         function convertGlobalToLocal (e) {
             var d = src_el.getBoundingClientRect();
             var x = e.clientX - d.left;
@@ -184,6 +175,15 @@ module.exports = (
             dim.x2 = e.x + dim.w * 0.5;
             dim.y2 = e.y + dim.h * 0.5;
             render();
+        }
+
+        function setParent (selector) {
+            if (src_el) { this.destroy(); }
+            src_el = document.querySelector(selector);
+            src_el.className += (' imgc ').indexOf(' ' + opts.cn + ' ') > -1
+                ? ''
+                : ' imgc'
+            ;
         }
 
 //
@@ -259,7 +259,7 @@ module.exports = (
                 }
             }
             //  Get parent
-            setParent(selector);
+            setParent.call(this, selector);
             //  Load image
             img = new Image();
             img.addEventListener('load', function (evt) {
@@ -270,7 +270,7 @@ module.exports = (
 
         ImageCropper.prototype.create = function (selector) {
             if (initialized) { return; }
-            if (!src_el) { setParent(selector); }
+            if (!src_el) { setParent.call(this, selector); }
 
             //  Calculate width and height based on max-width and max-height
             var w = img.width;

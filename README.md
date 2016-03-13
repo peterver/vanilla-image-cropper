@@ -59,7 +59,7 @@ var img_c = new ImageCropper(..., '../assets/my_img.jpg', ...);
 ### options
 There are several possible options defined for the image cropper 
 
-* update
+* update_cb
   * Callback function that is called everytime a move/change happens
 * max_width
   * Sets the maximum width that the imagecropper can become
