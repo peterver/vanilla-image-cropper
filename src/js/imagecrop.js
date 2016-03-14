@@ -28,94 +28,99 @@ module.exports = (
             min_crop_height : ['mch', 32],
             max_width : ['mw', 500],
             max_height : ['mh', 500],
-            fixed_size : ['fs', false]
+            fixed_size : ['fs', false],
+            mode : ['mo', 'square'],
         };
 
         //  Callback handlers used for every handle and their cbs
-        var handles_cbs = [
-            function (e) {  //  TOP LEFT [0]
-                var orig = dim.x;
-                handles_cbs[7](e);
-                if (!opts.fs) {
-                    handles_cbs[4](e);
-                } else {
-                    if (dim.y + dim.x - orig < 0) {
-                        dim.x = orig - dim.y;
-                        dim.y = 0;
+        var handles_cbs = {
+            circular : [
+            ],
+            square : [
+                function (e) {  //  TOP LEFT [0]
+                    var orig = dim.x;
+                    handles_cbs[opts.mo][7](e);
+                    if (!opts.fs) {
+                        handles_cbs[opts.mo][4](e);
                     } else {
-                        dim.y += dim.x - orig;
+                        if (dim.y + dim.x - orig < 0) {
+                            dim.x = orig - dim.y;
+                            dim.y = 0;
+                        } else {
+                            dim.y += dim.x - orig;
+                        }
                     }
-                }
-            },
-            function (e) {  //  TOP RIGHT [1]
-                var orig = dim.x2;
-                handles_cbs[5](e);
-                if (!opts.fs) {
-                    handles_cbs[4](e);
-                } else {
-                    if (dim.y - dim.x2 + orig < 0) {
-                        dim.x2 = orig + dim.y;
-                        dim.y = 0;
+                },
+                function (e) {  //  TOP RIGHT [1]
+                    var orig = dim.x2;
+                    handles_cbs[opts.mo][5](e);
+                    if (!opts.fs) {
+                        handles_cbs[opts.mo][4](e);
                     } else {
-                        dim.y -= dim.x2 - orig;
+                        if (dim.y - dim.x2 + orig < 0) {
+                            dim.x2 = orig + dim.y;
+                            dim.y = 0;
+                        } else {
+                            dim.y -= dim.x2 - orig;
+                        }
                     }
-                }
-            },
-            function (e) {  //  BOTTOM RIGHT [2]
-                var orig = dim.x2;
-                handles_cbs[5](e);
-                if (!opts.fs) {
-                    handles_cbs[6](e);
-                } else {
-                    var src_dim = src_el.getBoundingClientRect();
-                    if (dim.y2 + dim.x2 - orig > src_dim.height) {
-                        dim.x2 = orig + (src_dim.height - dim.y2);
-                        dim.y2 = src_dim.height;
+                },
+                function (e) {  //  BOTTOM RIGHT [2]
+                    var orig = dim.x2;
+                    handles_cbs[opts.mo][5](e);
+                    if (!opts.fs) {
+                        handles_cbs[opts.mo][6](e);
                     } else {
-                        dim.y2 += dim.x2 - orig;
+                        var src_dim = src_el.getBoundingClientRect();
+                        if (dim.y2 + dim.x2 - orig > src_dim.height) {
+                            dim.x2 = orig + (src_dim.height - dim.y2);
+                            dim.y2 = src_dim.height;
+                        } else {
+                            dim.y2 += dim.x2 - orig;
+                        }
                     }
-                }
-            },
-            function (e) {  //  BOTTOM LEFT [3]
-                var orig = dim.x;
-                handles_cbs[7](e);
-                if (!opts.fs) {
-                    handles_cbs[6](e);
-                } else {
-                    var src_dim = src_el.getBoundingClientRect();
-                    if (dim.y2 + (orig - dim.x) > src_dim.height) {
-                        dim.x = orig - (src_dim.height - dim.y2);
-                        dim.y2 = src_dim.height;
+                },
+                function (e) {  //  BOTTOM LEFT [3]
+                    var orig = dim.x;
+                    handles_cbs[opts.mo][7](e);
+                    if (!opts.fs) {
+                        handles_cbs[opts.mo][6](e);
                     } else {
-                        dim.y2 -= dim.x - orig;
+                        var src_dim = src_el.getBoundingClientRect();
+                        if (dim.y2 + (orig - dim.x) > src_dim.height) {
+                            dim.x = orig - (src_dim.height - dim.y2);
+                            dim.y2 = src_dim.height;
+                        } else {
+                            dim.y2 -= dim.x - orig;
+                        }
                     }
+                },
+                function (e) {  //  TOP [4]
+                    dim.y = ((dim.y2 - e.y < opts.mch)
+                        ? dim.y2 - opts.mch
+                        : e.y
+                    );  //  we need to do additional checks based on minimum crop height
+                },
+                function (e) {  //  RIGHT [5]
+                    dim.x2 = ((e.x - dim.x < opts.mcw)
+                        ? dim.x + opts.mcw
+                        : e.x
+                    );  //  we need to do additional checks based on minimum crop width
+                },
+                function (e) {  //  BOTTOM [6]
+                    dim.y2 = ((e.y - dim.y < opts.mch)
+                        ? dim.y + opts.mch
+                        : e.y
+                    );  //  we need to do additional checks based on minimum crop height
+                },
+                function (e) {  //  LEFT [7]
+                    dim.x = ((dim.x2 - e.x < opts.mcw)
+                        ? dim.x2 - opts.mcw
+                        : e.x
+                    );  //  we need to do additional checks based on minimum crop width
                 }
-            },
-            function (e) {  //  TOP [4]
-                dim.y = ((dim.y2 - e.y < opts.mch)
-                    ? dim.y2 - opts.mch
-                    : e.y
-                );  //  we need to do additional checks based on minimum crop height
-            },
-            function (e) {  //  RIGHT [5]
-                dim.x2 = ((e.x - dim.x < opts.mcw)
-                    ? dim.x + opts.mcw
-                    : e.x
-                );  //  we need to do additional checks based on minimum crop width
-            },
-            function (e) {  //  BOTTOM [6]
-                dim.y2 = ((e.y - dim.y < opts.mch)
-                    ? dim.y + opts.mch
-                    : e.y
-                );  //  we need to do additional checks based on minimum crop height
-            },
-            function (e) {  //  LEFT [7]
-                dim.x = ((dim.x2 - e.x < opts.mcw)
-                    ? dim.x2 - opts.mcw
-                    : e.x
-                );  //  we need to do additional checks based on minimum crop width
-            }
-        ];
+            ],
+        };
 
 //
 //  UTILITY / DIMENSIONAL CHECKS
@@ -163,7 +168,16 @@ module.exports = (
             handles_wrap.style.right = ~~(w - dim.x2) + 'px';
             handles_wrap.style.bottom = ~~(h - dim.y2) + 'px';
 
-            overlay_el.setAttribute('d', 'M 0 0 v' + h + 'h' + w + 'v' + -h + 'H-0zM' + dim.x + ' ' + dim.y + 'h' + dim.w + 'v' + dim.h + 'h-' + dim.w + 'V-' + dim.h + 'z');
+            var _path = 'M 0 0 v' + h + 'h' + w + 'v' + -h + 'H-0zM';
+
+            if (opts.mo === 'square') {
+                _path += (dim.x + ' ' + dim.y + 'h' + dim.w + 'v' + dim.h + 'h-' + dim.w + 'V-' + dim.h + 'z');
+            } else if (opts.mo === 'circular') {
+                var r = dim.w * .5;
+                _path += (dim.x + dim.w) * 0.5 + ' ' + (dim.y + dim.h) * 0.5 + 'm-' + r + ',0a' + r + ',' + r + ' 0 1,0 ' + dim.w + ',0a' + r + ',' + r + ' 0 1,0 -' + dim.w + ',0z';
+            }
+
+            overlay_el.setAttribute('d', _path);
 
             if (opts.up) { opts.up(dim); }
         }
@@ -180,10 +194,7 @@ module.exports = (
         function setParent (selector) {
             if (src_el) { this.destroy(); }
             src_el = document.querySelector(selector);
-            src_el.className += (' imgc ').indexOf(' ' + opts.cn + ' ') > -1
-                ? ''
-                : ' imgc'
-            ;
+            src_el.className += src_el.className.indexOf('imgc') > -1 ? '' : ' imgc';
         }
 
 //
@@ -258,6 +269,7 @@ module.exports = (
                     );
                 }
             }
+
             //  Get parent
             setParent.call(this, selector);
             //  Load image
@@ -304,6 +316,7 @@ module.exports = (
             src_el.appendChild(overlay);
 
             overlay_el = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            overlay_el.setAttribute('fill-rule', 'evenodd');
             overlay.appendChild(overlay_el);
 
             //  Build handlers
@@ -311,8 +324,15 @@ module.exports = (
             handles_wrap.className = 'imgc-handles';
             src_el.appendChild(handles_wrap);
 
-            for (var i = 0; i < (opts.fs ? 4 : 8); i++) {
-                handles_wrap.appendChild(new Handle(opts.fs ? 0 : ~~(i / 4), i % 4, handles_cbs[i]));
+            var cbs = handles_cbs[opts.mo];
+            if (opts.mo === 'square') {
+                for (var i = 0; i < (opts.fs ? 4 : 8); i++) {
+                    handles_wrap.appendChild(new Handle(opts.fs ? 0 : ~~(i / 4), i % 4, cbs[i]));
+                }
+            } else {
+                for (var i = 0; i < cbs.length; i++) {
+                    handles_wrap.appendChild(new Handle(2, i, cbs[i]));
+                }
             }
 
             src_el.addEventListener('mousedown', document_mousedown);
