@@ -1,4 +1,4 @@
-# Lightweight Javascript ImageCropper 0.1
+# Lightweight Javascript ImageCropper 1.1
 
 A lightweight javascript imagecropper written in vanilla js
 with zero-dependency injection that builds itself into an object.
@@ -60,21 +60,25 @@ var img_c = new ImageCropper(..., '../assets/my_img.jpg', ...);
 There are several possible options defined for the image cropper 
 
 * update_cb
-  * Callback function that is called everytime a move/change happens
+  Callback function that is called everytime a move/change happens
 * max_width
-  * Sets the maximum width that the imagecropper can become
+  Sets the maximum width that the imagecropper can become
 * max_height
-  * Sets the maximum height for the imagecropper
+  Sets the maximum height for the imagecropper
 * min_crop_width
-  * The minimum width that the cropped image can be
+  The minimum width that the cropped image can be
 * min_crop_height
-  * The miminum height that the cropped image can be
+  The miminum height that the cropped image can be
 * create_cb
-  * A callback function that is called when the imagecropper has finished creating, this will pass an object containing the dimensions of the imagecropper ( for styling or positioning purposes )
+  A callback function that is called when the imagecropper has finished creating, this will pass an object containing the dimensions of the imagecropper ( for styling or positioning purposes )
 * destroy_cb
-  * A callback function that is called when the imagecropper has finished destroying itself
+  A callback function that is called when the imagecropper has finished destroying itself
 * fixed_size
-  * A boolean ( true | false ), that tells the image cropper if it should constrain the size of the cropped area to be fixed or not ?
+  A boolean ( true | false ), that tells the image cropper if it should constrain the size of the cropped area to be fixed or not ?
+* mode (default = 'square')
+  Sets the type of preview you should see when using the image cropper, possible options are
+  * 'square'
+  * 'circular'
 
 # Cropping an image (mime_type, quality)
 When you're all done with your changes, you can crop the image by calling the **crop** function.
