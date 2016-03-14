@@ -24,7 +24,7 @@ var onCreateHandler = function() {
   if(is_active) { return; }
 
   new ImageCropper('.test-imagecrop', 'img.jpg', {
-    update: onUpdateHandler
+    update_cb: onUpdateHandler
   });
   destroy_btn.style.display = 'initial';
   create_btn.style.display = 'none';
@@ -53,11 +53,11 @@ var destroy_btn = document.querySelector('.destroy-button');
 destroy_btn.addEventListener('click', onDestroyHandler);
 
 img_c = new ImageCropper('.test-imagecrop', 'img.jpg', {
-  update: onUpdateHandler,
   min_crop_width: 100,
   min_crop_height: 150,
   mode: 'circular',
-  fixed_size: true,
+  fixed_size: false,
+  update_cb: onUpdateHandler,
   create_cb: function(dim) {
     console.log('created - ', dim);
   },
