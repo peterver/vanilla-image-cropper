@@ -59,26 +59,26 @@ var img_c = new ImageCropper(..., '../assets/my_img.jpg', ...);
 ### options
 There are several possible options defined for the image cropper 
 
-* update_cb
-  Callback function that is called everytime a move/change happens
-* max_width
-  Sets the maximum width that the imagecropper can become
-* max_height
-  Sets the maximum height for the imagecropper
-* min_crop_width
-  The minimum width that the cropped image can be
-* min_crop_height
-  The miminum height that the cropped image can be
-* create_cb
-  A callback function that is called when the imagecropper has finished creating, this will pass an object containing the dimensions of the imagecropper ( for styling or positioning purposes )
-* destroy_cb
-  A callback function that is called when the imagecropper has finished destroying itself
-* fixed_size
-  A boolean ( true | false ), that tells the image cropper if it should constrain the size of the cropped area to be fixed or not ?
-* mode (default = 'square')
+* **max_width**<br>
+  Sets the maximum width that the imagecropper can become<br>
+* **max_height**<br>
+  Sets the maximum height for the imagecropper<br><br>
+* **min_crop_width**<br>
+  The minimum width that the cropped image can be<br><br>
+* **min_crop_height**<br>
+  The miminum height that the cropped image can be<br><br>
+* **create_cb**<br>
+  A callback function that is called when the imagecropper has finished creating, this will pass an object containing the dimensions of the imagecropper ( for styling or positioning purposes )<br><br>
+* **update_cb**<br>
+ Callback function that is called everytime a move/change happens<br><br>
+* **destroy_cb**<br>
+  A callback function that is called when the imagecropper has finished destroying itself<br><br>
+* **fixed_size**<br>
+  A boolean ( true | false ), that tells the image cropper if it should constrain the size of the cropped area to be fixed or not ?<br><br>
+* **mode** (default = 'square')<br>
   Sets the type of preview you should see when using the image cropper, possible options are
-  * 'square'
-  * 'circular'
+  * _'square'_
+  * _'circular'_
 
 # Cropping an image (mime_type, quality)
 When you're all done with your changes, you can crop the image by calling the **crop** function.
