@@ -37,6 +37,16 @@
 		                min_crop_width: 100,
 		                min_crop_height: 100,
 		                fixed_size: true,
+		                mode: 'circular',
+		                update_cb: function (dim) {
+		                	console.log('update', dim);
+		                },
+		                create_cb: function (dim) {
+		                	console.log('create', dim);
+		                },
+		                destroy_cb: function (dim) {
+		                	console.log('destroy', dim);
+		                }
 		            });        
                 };
 
