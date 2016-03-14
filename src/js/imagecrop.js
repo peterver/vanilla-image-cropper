@@ -35,6 +35,9 @@ module.exports = (
         //  Callback handlers used for every handle and their cbs
         var handles_cbs = {
             circular : [
+                function (e) {
+                    console.log('scaling up and down');
+                }
             ],
             square : [
                 function (e) {  //  TOP LEFT [0]
@@ -168,13 +171,13 @@ module.exports = (
             handles_wrap.style.right = ~~(w - dim.x2) + 'px';
             handles_wrap.style.bottom = ~~(h - dim.y2) + 'px';
 
-            var _path = 'M 0 0 v' + h + 'h' + w + 'v' + -h + 'H-0zM';
+            var _path = ['M 0 0 v', h, 'h', w, 'v', -h, 'H-0zM'].join('');
 
             if (opts.mo === 'square') {
-                _path += (dim.x + ' ' + dim.y + 'h' + dim.w + 'v' + dim.h + 'h-' + dim.w + 'V-' + dim.h + 'z');
+                _path += [dim.x, dim.y, 'h', dim.w, 'v', dim.h, 'h', -dim.w, 'V', -dim.h, 'z'].join(' ');
             } else if (opts.mo === 'circular') {
-                var r = dim.w * .5;
-                _path += (dim.x + dim.w) * 0.5 + ' ' + (dim.y + dim.h) * 0.5 + 'm-' + r + ',0a' + r + ',' + r + ' 0 1,0 ' + dim.w + ',0a' + r + ',' + r + ' 0 1,0 -' + dim.w + ',0z';
+                var r = dim.w * 0.5;
+                _path += [dim.x + dim.w * 0.5, dim.y + dim.h * 0.5, 'm', -r, ',0', 'a', r, ',', r, '0 1,0', dim.w, ',0', 'a', r, ',', r, '0 1,0', -dim.w, ',0', 'z'].join(' ');
             }
 
             overlay_el.setAttribute('d', _path);
@@ -321,7 +324,7 @@ module.exports = (
 
             //  Build handlers
             handles_wrap = document.createElement('div');
-            handles_wrap.className = 'imgc-handles';
+            handles_wrap.className = ['imgc-handles', opts.mo].join(' ');
             src_el.appendChild(handles_wrap);
 
             var cbs = handles_cbs[opts.mo];
