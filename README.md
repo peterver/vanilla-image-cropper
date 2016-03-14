@@ -60,7 +60,7 @@ var img_c = new ImageCropper(..., '../assets/my_img.jpg', ...);
 There are several possible options defined for the image cropper 
 
 * **max_width**<br>
-  Sets the maximum width that the imagecropper can become<br>
+  Sets the maximum width that the imagecropper can become<br><br>
 * **max_height**<br>
   Sets the maximum height for the imagecropper<br><br>
 * **min_crop_width**<br>
