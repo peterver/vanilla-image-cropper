@@ -13,14 +13,15 @@ var $ = require('gulp-load-plugins')({
 
 var paths = {
     js          : ['src/js/**/**.js'],
-    js_dest     : 'build/',
+    js_dest     : 'build/js/',
     scss        : ['src/sass/**/**.scss'],
-    scss_dest   : 'build/',
+    scss_dest   : 'build/css/',
     example     : 'example/src/**.js',
     example_dest: 'example/src/'
 };
 
 var onError = function (err) {
+  console.log(err);
   $.notify({title: 'Gulp', message: 'Error: <%= err.message %>'});
 };
 
