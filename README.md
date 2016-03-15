@@ -1,4 +1,4 @@
-# Lightweight Javascript ImageCropper 1.1
+# Lightweight Javascript ImageCropper 1.1.1
 
 A lightweight javascript imagecropper written in vanilla js
 with zero-dependency injection that builds itself into an object.
