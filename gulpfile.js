@@ -82,3 +82,8 @@ gulp.task('watch', function (cb) {
 gulp.task('default', function (cb) {
     $.runSequence('build', 'watch', cb);
 });
+
+//  Production task
+gulp.task('production', function (cb) {
+  $.runSequence('build', cb);
+});
