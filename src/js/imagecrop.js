@@ -16,7 +16,7 @@ module.exports = (
         var img = null;
         var ratio = {
             w : 1,
-            h : 1
+            h : 1,
         };
 
         //  Used to setup the options for the ImageCropper
@@ -132,6 +132,16 @@ module.exports = (
             };
         }
 
+        function cell (tag, cname, opts, par, ns) {
+            var el = !ns ? document.createElement(tag) : document.createElementNS('http://www.w3.org/2000/svg', tag);
+            if (cname) { el.className = cname; }
+            if (par) { par.appendChild(el); }
+            Object.keys(opts || {}).forEach(function (key) {
+                el.setAttribute(key, opts[key]);
+            });
+            return el;
+        }
+
         function render () {
             //  Retrieve width/height
             var w = parseInt(src_el.style.width);
@@ -204,13 +214,13 @@ module.exports = (
             update(e);
         }
 
+        function document_mousemove (e) {
+            update(e);
+        }
+
         function window_blur (e) {
             document.removeEventListener('mouseup', window_blur);
             document.removeEventListener('mousemove', document_mousemove);
-        }
-
-        function document_mousemove (e) {
-            update(e);
         }
 
 //
@@ -237,8 +247,7 @@ module.exports = (
                 document.removeEventListener('mousemove', handle_move);
             }
 
-            var el = document.createElement('span');
-            el.className = 'imgc-handles-el-' + t + '-' + i;
+            var el = cell('span', 'imgc-handles-el-' + t + '-' + i);
             el.addEventListener('mousedown', handle_down);
             return el;
         }
@@ -296,7 +305,7 @@ module.exports = (
             //  Set ratio to use in processing afterwards ( this is based on original image size )
             ratio = {
                 w : img.naturalWidth / w,
-                h : img.naturalHeight / h
+                h : img.naturalHeight / h,
             };
 
             src_el.style.width = w + 'px';
@@ -304,22 +313,15 @@ module.exports = (
             src_el.addEventListener('DOMNodeRemovedFromDocument', this.destroy);
 
             //  Image for seeing
-            src_el.appendChild(img);
+            var img_wrap = cell('div', 'imgc-content', {}, src_el);
+            img_wrap.appendChild(img);
 
             //  Build SVG overlay
-            var overlay = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-            overlay.setAttribute('height', h);
-            overlay.setAttribute('width', w);
-            src_el.appendChild(overlay);
-
-            overlay_el = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-            overlay_el.setAttribute('fill-rule', 'evenodd');
-            overlay.appendChild(overlay_el);
+            var overlay = cell('svg', null, { height : h, width : w }, src_el, true);
+            overlay_el = cell('path', null, { 'fill-rule' : 'evenodd' }, overlay, true);
 
             //  Build handlers
-            handles_wrap = document.createElement('div');
-            handles_wrap.className = ['imgc-handles', opts.mo].join(' ');
-            src_el.appendChild(handles_wrap);
+            handles_wrap = cell('div', ['imgc-handles', 'imgc-handles-' + opts.mo].join(' '), {}, src_el);
 
             for (var i = 0; i < (opts.fs ? 4 : 8); i++) {
                 handles_wrap.appendChild(new Handle(opts.fs ? 0 : ~~(i / 4), i % 4, handles_cbs[i]));
@@ -382,10 +384,7 @@ module.exports = (
             }
             if (!quality || quality < 0 || quality > 1) {quality = 1;}
 
-            var canvas = document.createElement('canvas');
-            canvas.setAttribute('width', dim.w);
-            canvas.setAttribute('height', dim.h);
-
+            var canvas = cell('canvas', null, { width : dim.w, height : dim.h });
             var ctx = canvas.getContext('2d');
             ctx.drawImage(
                 img,

@@ -13,15 +13,14 @@ var $ = require('gulp-load-plugins')({
 
 var paths = {
     js          : ['src/js/**/**.js'],
-    js_dest     : 'build/js/',
+    js_dest     : 'dist/js/',
     scss        : ['src/sass/**/**.scss'],
-    scss_dest   : 'build/css/',
+    scss_dest   : 'dist/css/',
     example     : 'example/src/**.js',
     example_dest: 'example/src/'
 };
 
 var onError = function (err) {
-  console.log(err);
   $.notify({title: 'Gulp', message: 'Error: <%= err.message %>'});
 };
 
@@ -82,4 +81,9 @@ gulp.task('watch', function (cb) {
 //  Wrapper task for building all files, and watching for changes.
 gulp.task('default', function (cb) {
     $.runSequence('build', 'watch', cb);
+});
+
+//  Production task
+gulp.task('production', function (cb) {
+  $.runSequence('build', cb);
 });

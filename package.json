@@ -3,8 +3,22 @@
   "version": "1.1.1",
   "description": "A lightweight javascript imagecropper",
   "main": "imagecrop.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "author": {
+    "name": "Peter Vermeulen",
+    "email": "nmb.peterv@gmail.com",
+    "url": "https://github.com/peterver"
+  },
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/peterver/image-crop.git"
+  },
+  "bugs": {
+    "url": "https://github.com/peterver/image-crop/issues"
+  },
+  "engines": {
+    "node": "^5.6.0",
+    "npm": "^3.6.0"
   },
   "keywords": [
     "imagecropper",
@@ -12,8 +26,16 @@
     "html5",
     "lightweight"
   ],
-  "author": "Peter Vermeulen",
-  "license": "ISC",
+  "files": [
+    "dist/",
+    "example/"
+  ],
+  "scripts": {
+    "test": "karma start karma.conf.js"
+  },
+  "peerDependencies": {
+    "gulp": "^3.x.x"
+  },
   "devDependencies": {
     "browserify": "^11.0.1",
     "gulp": "^3.9.0",
@@ -27,7 +49,12 @@
     "gulp-scss-lint": "^0.2.1",
     "gulp-uglify": "^1.2.0",
     "gulp-util": "^3.0.6",
+    "jasmine-core": "^2.4.1",
     "jshint-stylish": "^2.1.0",
+    "karma": "^0.13.22",
+    "karma-jasmine": "^0.3.8",
+    "karma-phantomjs-launcher": "^1.0.0",
+    "phantomjs-prebuilt": "^2.1.6",
     "run-sequence": "^1.1.1",
     "vinyl-source-stream": "^1.1.0"
   }

@@ -56,7 +56,7 @@ img_c = new ImageCropper('.test-imagecrop', 'img.jpg', {
   min_crop_width: 100,
   min_crop_height: 150,
   mode: 'circular',
-  fixed_size: false,
+  fixed_size: true,
   update_cb: onUpdateHandler,
   create_cb: function(dim) {
     console.log('created - ', dim);
