@@ -15,6 +15,10 @@
     "html5",
     "lightweight"
   ],
+  "ignore": [
+    "src/",
+    "tests/"
+  ],
   "license": "MIT",
   "homepage": "https://github.com/peterver/image-crop",
   "ignore": [
