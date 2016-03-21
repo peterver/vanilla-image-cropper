@@ -112,3 +112,6 @@ and the imagecropper instance will destroy itself :]
 
 # Example
 For an example, check out the example folder in the repository
+
+# Author
+Peter Vermeulen
