@@ -1,89 +1,117 @@
-/*
- * Requirements and plugins
- */
+'use strict';
 
-var gulp = require('gulp');
-var browserify = require('browserify');
-var source = require('vinyl-source-stream');
+//
+//  SETUP
+//
 
-var $ = require('gulp-load-plugins')({
-    pattern: ['*'],
-    replaceString: /\bgulp[\-.]/
-});
+    const gulp = require('gulp');
+    const browserify = require('browserify');
+    const source = require('vinyl-source-stream');
 
-var paths = {
-    js          : ['src/js/**/**.js'],
-    js_dest     : 'dist/js/',
-    scss        : ['src/sass/**/**.scss'],
-    scss_dest   : 'dist/css/',
-    example     : 'example/src/**.js',
-    example_dest: 'example/src/'
-};
+    const $ = require('gulp-load-plugins')({
+        pattern: ['*'],
+        replaceString: /\bgulp[\-.]/
+    });
 
-var onError = function (err) {
-  $.notify({title: 'Gulp', message: 'Error: <%= err.message %>'});
-};
+    const onError = (err) => {
+        $.notify({
+            title: 'Gulp', message: 'Error: <%= err.message %>'
+        });
+    };
 
-//  Javascript
-gulp.task('js', function (cb) {
-  return gulp.src(paths.js)
-    .pipe($.plumber({errorHandler: onError}))
-    .pipe($.jshint('.jshintrc'))
-    .pipe($.jshint.reporter('jshint-stylish'))
-    .pipe($.jshint.reporter('fail'))
-    .pipe($.notify({title: 'jshint', message: 'jshint - passed'}))
-    .pipe($.uglify())
-    .pipe($.rename({suffix: '.min'}))
-    .pipe(gulp.dest(paths.js_dest))
-    .pipe(gulp.dest(paths.example_dest));
-});
+    const config = {
+        eslintrc : '.eslintrc',
+        scsslint : '.scss-lint.yml',
+        js : {
+            src : ['src/js/**/**.js'],
+            dest : 'dist/js/',
+        },
+        scss : {
+            src : ['src/sass/**/**.scss'],
+            dest : 'dist/css/',
+        },
+        example : {
+            src : 'example/src/**.js',
+            dest : 'example/src/',
+        },
+    }
 
-//  SASS
-gulp.task('scss', function (cb) {
-  return gulp.src(paths.scss)
-    .pipe($.plumber({errorHandler: onError}))
-    .pipe($.scssLint({'config': '.scss-lint.yml'}))
-    .pipe($.sass({outputStyle: 'compressed'}))
-    .pipe($.autoprefixer())
-    .pipe($.rename({suffix: '.min'}))
-    .pipe(gulp.dest(paths.scss_dest));
-});
+//
+//  TASKS : JAVASCRIPT
+//
+
+    gulp.task('js', (cb) => gulp.src(config.js.src)
+        .pipe($.plumber({
+            errorHandler : onError
+        }))
+        .pipe($.eslint(config.eslintrc))
+        .pipe($.eslint.format())
+        .pipe($.babel({
+            presets : ['es2015'],
+            plugins : [
+                'check-es2015-constants',
+                'transform-minify-booleans',
+                'transform-property-literals',
+                'transform-member-expression-literals',
+                'transform-merge-sibling-variables'
+            ]
+        }))
+        .pipe($.uglify())
+        .pipe($.rename({
+            suffix : '.min'
+        }))
+        .pipe(gulp.dest(config.js.dest))
+        .pipe(gulp.dest(config.example.dest))
+    );
+
+//
+//  TASKS : SCSS
+//
+
+    gulp.task('scss', (cb) => gulp.src(config.scss.src)
+        .pipe($.plumber({
+            errorHandler : onError
+        }))
+        .pipe($.scssLint({
+            config : config.scsslint
+        }))
+        .pipe($.sass({
+            outputStyle : 'compressed'
+        }))
+        .pipe($.autoprefixer())
+        .pipe($.rename({
+            suffix : '.min'
+        }))
+        .pipe(gulp.dest(config.scss.dest))
+    );
 
 //  EXAMPLE
 
-gulp.task('example', function (cb) {
-  return browserify('example/src/app.js')
+gulp.task('example', (cb) => browserify('example/src/app.js')
     .bundle()
     .pipe(source('app.js'))
-    .pipe(gulp.dest('./example/'));
-});
+    .pipe(gulp.dest('./example/'))
+);
 
 //  Just throw a quick notification in the CLI when everything was built.
-gulp.task('build:notify', function (cb) {
+gulp.task('build:notify', (cb) => {
     $.util.log($.util.colors.green('Files successfully parsed!'));
     cb();
 });
 
-//  Build all files + notify user.
-gulp.task('build', [], function (cb) {
-    $.runSequence(['js', 'scss'], ['build:notify'], cb);
-});
-
 //  Watch the necessary directories for changes and rebuild source files,
-gulp.task('watch', function (cb) {
-    gulp.watch(paths.scss, ['scss']);
-    gulp.watch(paths.js, ['js']);
-    gulp.watch(paths.example, ['js', 'scss', 'example']);
-    $.util.log($.util.colors.magenta('Watching for changes…'));
+gulp.task('watch', (cb) => {
+    gulp.watch(config.scss.src, ['scss']);
+    gulp.watch(config.js.src, ['js']);
+    gulp.watch(config.example.src, ['js', 'scss', 'example']);
     cb();
 });
 
+//  Build all files + notify user.
+gulp.task('build', [], (cb) => $.runSequence(['js', 'scss'], ['build:notify'], cb));
+
 //  Wrapper task for building all files, and watching for changes.
-gulp.task('default', function (cb) {
-    $.runSequence('build', 'watch', cb);
-});
+gulp.task('default', (cb) => $.runSequence('build', 'watch', cb));
 
 //  Production task
-gulp.task('production', function (cb) {
-  $.runSequence('build', cb);
-});
+gulp.task('production', (cb) => $.runSequence('build', cb));

@@ -1,224 +1,231 @@
-module.exports = (
-    function () {
+module.exports = (() => {
 
 //
 //  VARIABLES
 //
 
-        var src_el;
-
-        var handles_wrap;
-        var overlay_el;
-
-        var initialized = false;
-        var dim = {};
-        var opts = {};
-        var img = null;
-        var ratio = {
-            w : 1,
-            h : 1,
-        };
-
-        //  Used to setup the options for the ImageCropper
-        var pos_opts = {
-            update_cb : ['up', false],
-            create_cb : ['cr', false],
-            destroy_cb : ['de', false],
-            min_crop_width : ['mcw', 32],
-            min_crop_height : ['mch', 32],
-            max_width : ['mw', 500],
-            max_height : ['mh', 500],
-            fixed_size : ['fs', false],
-            mode : ['mo', 'square'],
-        };
+        const scope = Object.seal({
+            $$initialized : false,
+            meta : {
+                dimensions : {},
+                img : null,
+                ratio : {
+                    w : 1,
+                    h : 1,
+                },
+            },
+            elements : {
+                source : null,
+                overlay : null,
+                handles : null,
+            },
+            options : {
+                update_cb : () => {},
+                create_cb : () => {},
+                destroy_cb : () => {},
+                min_crop_width : 32,
+                min_crop_height : 32,
+                max_width : 500,
+                max_height : 500,
+                fixed_size : false,
+                mode : 'square',
+            },
+        });
 
         //  Callback handlers used for every handle and their cbs
-        var handles_cbs = [
-            function (e) {  //  TOP LEFT [0]
-                var orig = dim.x;
-                handles_cbs[7](e);
-                if (!opts.fs) {
-                    handles_cbs[4](e);
-                } else {
-                    if (dim.y + dim.x - orig < 0) {
-                        dim.x = orig - dim.y;
-                        dim.y = 0;
+        const handles_cbs = [
+            (evt) => {  //  TOP LEFT [0]
+                const original_x = scope.meta.dimensions.x;
+
+                handles_cbs[7](evt);
+                if (!scope.options.fixed_size) handles_cbs[4](evt);
+                else {
+                    if (scope.meta.dimensions.y + scope.meta.dimensions.x - original_x < 0) {
+                        scope.meta.dimensions.x = original_x - scope.meta.dimensions.y;
+                        scope.meta.dimensions.y = 0;
                     } else {
-                        dim.y += dim.x - orig;
+                        scope.meta.dimensions.y += scope.meta.dimensions.x - original_x;
                     }
                 }
             },
-            function (e) {  //  TOP RIGHT [1]
-                var orig = dim.x2;
-                handles_cbs[5](e);
-                if (!opts.fs) {
-                    handles_cbs[4](e);
-                } else {
-                    if (dim.y - dim.x2 + orig < 0) {
-                        dim.x2 = orig + dim.y;
-                        dim.y = 0;
+            (evt) => {  //  TOP RIGHT [1]
+                const {x2} = scope.meta.dimensions;
+
+                handles_cbs[5](evt);
+                if (!scope.options.fixed_size) handles_cbs[4](evt);
+                else {
+                    if (scope.meta.dimensions.y - scope.meta.dimensions.x2 + x2 < 0) {
+                        scope.meta.dimensions.x2 = x2 + scope.meta.dimensions.y;
+                        scope.meta.dimensions.y = 0;
                     } else {
-                        dim.y -= dim.x2 - orig;
+                        scope.meta.dimensions.y -= scope.meta.dimensions.x2 - x2;
                     }
                 }
             },
-            function (e) {  //  BOTTOM RIGHT [2]
-                var orig = dim.x2;
-                handles_cbs[5](e);
-                if (!opts.fs) {
-                    handles_cbs[6](e);
-                } else {
-                    var src_dim = src_el.getBoundingClientRect();
-                    if (dim.y2 + dim.x2 - orig > src_dim.height) {
-                        dim.x2 = orig + (src_dim.height - dim.y2);
-                        dim.y2 = src_dim.height;
+            (evt) => {  //  BOTTOM RIGHT [2]
+                const {x2} = scope.meta.dimensions;
+
+                handles_cbs[5](evt);
+                if (!scope.options.fixed_size) handles_cbs[6](evt);
+                else {
+                    const source_dimensions = scope.elements.source.getBoundingClientRect();
+
+                    if (scope.meta.dimensions.y2 + scope.meta.dimensions.x2 - x2 > source_dimensions.height) {
+                        scope.meta.dimensions.x2 = x2 + (source_dimensions.height - scope.meta.dimensions.y2);
+                        scope.meta.dimensions.y2 = source_dimensions.height;
                     } else {
-                        dim.y2 += dim.x2 - orig;
+                        scope.meta.dimensions.y2 += scope.meta.dimensions.x2 - x2;
                     }
                 }
             },
-            function (e) {  //  BOTTOM LEFT [3]
-                var orig = dim.x;
-                handles_cbs[7](e);
-                if (!opts.fs) {
-                    handles_cbs[6](e);
-                } else {
-                    var src_dim = src_el.getBoundingClientRect();
-                    if (dim.y2 + (orig - dim.x) > src_dim.height) {
-                        dim.x = orig - (src_dim.height - dim.y2);
-                        dim.y2 = src_dim.height;
+            (evt) => {  //  BOTTOM LEFT [3]
+                const {x} = scope.meta.dimensions;
+
+                handles_cbs[7](evt);
+                if (!scope.options.fixed_size) handles_cbs[6](evt);
+                else {
+                    const source_dimensions = scope.elements.source.getBoundingClientRect();
+
+                    if (scope.meta.dimensions.y2 + (x - scope.meta.dimensions.x) > source_dimensions.height) {
+                        scope.meta.dimensions.x = x - (source_dimensions.height - scope.meta.dimensions.y2);
+                        scope.meta.dimensions.y2 = source_dimensions.height;
                     } else {
-                        dim.y2 -= dim.x - orig;
+                        scope.meta.dimensions.y2 -= scope.meta.dimensions.x - x;
                     }
                 }
             },
-            function (e) {  //  TOP [4]
-                dim.y = ((dim.y2 - e.y < opts.mch)
-                    ? dim.y2 - opts.mch
-                    : e.y
-                );  //  we need to do additional checks based on minimum crop height
-            },
-            function (e) {  //  RIGHT [5]
-                dim.x2 = ((e.x - dim.x < opts.mcw)
-                    ? dim.x + opts.mcw
-                    : e.x
-                );  //  we need to do additional checks based on minimum crop width
-            },
-            function (e) {  //  BOTTOM [6]
-                dim.y2 = ((e.y - dim.y < opts.mch)
-                    ? dim.y + opts.mch
-                    : e.y
-                );  //  we need to do additional checks based on minimum crop height
-            },
-            function (e) {  //  LEFT [7]
-                dim.x = ((dim.x2 - e.x < opts.mcw)
-                    ? dim.x2 - opts.mcw
-                    : e.x
-                );  //  we need to do additional checks based on minimum crop width
-            }
+            //  TOP [4]
+            (evt) => scope.meta.dimensions.y = (scope.meta.dimensions.y2 - evt.y < scope.options.min_crop_height)
+                ? scope.meta.dimensions.y2 - scope.options.min_crop_height
+                : evt.y,
+            //  RIGHT [5]
+            (evt) => scope.meta.dimensions.x2 = (evt.x - scope.meta.dimensions.x < scope.options.min_crop_width)
+                ? scope.meta.dimensions.x + scope.options.min_crop_width
+                : evt.x,
+            //  BOTTOM [6]
+            (evt) => scope.meta.dimensions.y2 = (evt.y - scope.meta.dimensions.y < scope.options.min_crop_height)
+                ? scope.meta.dimensions.y + scope.options.min_crop_height
+                : evt.y,
+            //  LEFT [7]
+            (evt) => scope.meta.dimensions.x = (scope.meta.dimensions.x2 - evt.x < scope.options.min_crop_width)
+                ? scope.meta.dimensions.x2 - scope.options.min_crop_width
+                : evt.x,
         ];
 
 //
 //  UTILITY / DIMENSIONAL CHECKS
 //
 
-        function convertGlobalToLocal (e) {
-            var d = src_el.getBoundingClientRect();
-            var x = e.clientX - d.left;
-            var y = e.clientY - d.top;
+        function convertGlobalToLocal (evt) {
+            const d = scope.elements.source.getBoundingClientRect();
+            const x = evt.clientX - d.left;
+            const y = evt.clientY - d.top;
+
             return {
-                x : x < 0 ? 0 : (x > d.width ? d.width : x),
-                y : y < 0 ? 0 : (y > d.height ? d.height : y)
+                x : x < 0 ? 0 : (x > d.width ? d.width : x),    //  Make sure X is always within the bounds of our dimensions
+                y : y < 0 ? 0 : (y > d.height ? d.height : y)   //  Make sure Y is always within the bounds of our dimensions
             };
         }
 
-        function cell (tag, cname, opts, par, ns) {
-            var el = !ns ? document.createElement(tag) : document.createElementNS('http://www.w3.org/2000/svg', tag);
-            if (cname) { el.className = cname; }
-            if (par) { par.appendChild(el); }
-            Object.keys(opts || {}).forEach(function (key) {
-                el.setAttribute(key, opts[key]);
-            });
+        function cell (tag, cname, attrs, par, is_svg) {
+            const el = !is_svg
+                ? document.createElement(tag)
+                : document.createElementNS('http://www.w3.org/2000/svg', tag);
+
+            if (cname) el.className = cname;
+            if (par) par.appendChild(el);
+
+            Object.keys(attrs || {}).forEach((key) => el.setAttribute(key, attrs[key]));
             return el;
         }
 
         function render () {
             //  Retrieve width/height
-            var w = parseInt(src_el.style.width);
-            var h = parseInt(src_el.style.height);
+            let {width : source_w, height : source_h} = scope.elements.source.style;
+
+            source_w = parseInt(source_w);
+            source_h = parseInt(source_h);
+
+            const {dimensions} = scope.meta;
 
             //  boundary collision check
-            if (dim.x < 0) {
-                dim.x = 0;
-                dim.x2 = dim.w;
+            if (dimensions.x < 0) {
+                dimensions.x = 0;
+                dimensions.x2 = dimensions.w;
             }
-            if (dim.y < 0) {
-                dim.y = 0;
-                dim.y2 = dim.h;
+
+            if (dimensions.y < 0) {
+                dimensions.y = 0;
+                dimensions.y2 = dimensions.h;
             }
-            if (dim.x2 > w) {
-                dim.x2 = w;
-                dim.x = dim.x2 - dim.w;
+
+            if (dimensions.x2 > source_w) {
+                dimensions.x2 = source_w;
+                dimensions.x = dimensions.x2 - dimensions.w;
             }
-            if (dim.y2 > h) {
-                dim.y2 = h;
-                dim.y = dim.y2 - dim.h;
+
+            if (dimensions.y2 > source_h) {
+                dimensions.y2 = source_h;
+                dimensions.y = dimensions.y2 - dimensions.h;
             }
+
             //  Set w/h for future use
-            dim.w = dim.x2 - dim.x;
-            dim.h = dim.y2 - dim.y;
+            dimensions.w = dimensions.x2 - dimensions.x;
+            dimensions.h = dimensions.y2 - dimensions.y;
+
+            const {x, x2, y, y2, w, h} = dimensions;
+            const w_rad = w * 0.5;
+            const h_rad = h * 0.5;
 
             //  Draw
-            handles_wrap.style.top = dim.y + 'px';
-            handles_wrap.style.left = dim.x + 'px';
-            handles_wrap.style.right = ~~(w - dim.x2) + 'px';
-            handles_wrap.style.bottom = ~~(h - dim.y2) + 'px';
+            scope.elements.handles.style.top = `${y}px`;
+            scope.elements.handles.style.left = `${x}px`;
+            scope.elements.handles.style.right = `${~~(source_w - x2)}px`;
+            scope.elements.handles.style.bottom = `${~~(source_h - y2)}px`;
 
-            var _path = ['M 0 0 v', h, 'h', w, 'v', -h, 'H-0zM'].join('');
+            //  Set path on svg
+            scope.elements.overlay.setAttribute('d', `M 0 0 v ${source_h} h ${source_w} v ${-source_h} H-0zM` + ((scope.options.mode === 'square')
+                ? `${x} ${y} h ${w} v ${h} h ${-w} V ${-h} z`
+                : `${x + w * 0.5} ${y + h * 0.5} m ${-w_rad},0 a ${w_rad}, ${h_rad} 0 1,0 ${w},0 a ${w_rad}, ${h_rad} 0 1,0 ${-w} ,0 z`
+            ));
 
-            if (opts.mo === 'square') {
-                _path += [dim.x, dim.y, 'h', dim.w, 'v', dim.h, 'h', -dim.w, 'V', -dim.h, 'z'].join(' ');
-            } else if (opts.mo === 'circular') {
-                var w_rad = dim.w * 0.5;
-                var h_rad = dim.h * 0.5;
-                _path += [dim.x + dim.w * 0.5, dim.y + dim.h * 0.5, 'm', -w_rad, ',0', 'a', w_rad, ',', h_rad, '0 1,0', dim.w, ',0', 'a', w_rad, ',', h_rad, '0 1,0', -dim.w, ',0', 'z'].join(' ');
-            }
-
-            overlay_el.setAttribute('d', _path);
-
-            if (opts.up) { opts.up(dim); }
+            scope.options.update_cb(dimensions);
         }
 
-        function update (e) {
-            e = convertGlobalToLocal(e);
-            dim.x = e.x - dim.w * 0.5;
-            dim.y = e.y - dim.h * 0.5;
-            dim.x2 = e.x + dim.w * 0.5;
-            dim.y2 = e.y + dim.h * 0.5;
+        function update (evt) {
+            evt = convertGlobalToLocal(evt);
+            const {dimensions} = scope.meta;
+
+            dimensions.x = evt.x - dimensions.w * 0.5;
+            dimensions.y = evt.y - dimensions.h * 0.5;
+            dimensions.x2 = evt.x + dimensions.w * 0.5;
+            dimensions.y2 = evt.y + dimensions.h * 0.5;
             render();
         }
 
         function setParent (selector) {
-            if (src_el) { this.destroy(); }
-            src_el = document.querySelector(selector);
-            src_el.className += src_el.className.indexOf('imgc') > -1 ? '' : ' imgc';
+            if (scope.elements.source) this.destroy();
+
+            scope.elements.source = document.querySelector(selector);
+
+            if (scope.elements.source.className.indexOf('imgc') === -1) scope.elements.source.className += ' imgc';
         }
 
 //
 //  EVENTS
 //
 
-        function document_mousedown (e) {
+        function document_mousedown (evt) {
             document.addEventListener('mousemove', document_mousemove);
             document.addEventListener('mouseup', window_blur);
-            update(e);
+            update(evt);
         }
 
-        function document_mousemove (e) {
-            update(e);
+        function document_mousemove (evt) {
+            update(evt);
         }
 
-        function window_blur (e) {
+        function window_blur () {
             document.removeEventListener('mouseup', window_blur);
             document.removeEventListener('mousemove', document_mousemove);
         }
@@ -227,28 +234,28 @@ module.exports = (
 //  HANDLE
 //
 
-        function Handle (t, i, cb) {
-            function handle_down (e) {
-                e.stopPropagation();
-                document.addEventListener('mouseup', handle_up);
-                document.addEventListener('mousemove', handle_move);
+        function Handle (type, direction, cb) {
+            function handleDown (evt) {
+                evt.stopPropagation();
+                document.addEventListener('mouseup', handleUp);
+                document.addEventListener('mousemove', handleMove);
             }
 
-            function handle_move (e) {
-                e.stopPropagation();
-                e = convertGlobalToLocal(e);
-                cb(e);
+            function handleMove (evt) {
+                evt.stopPropagation();
+                cb(convertGlobalToLocal(evt));
                 render();
             }
 
-            function handle_up (e) {
-                e.stopPropagation();
-                document.removeEventListener('mouseup', handle_up);
-                document.removeEventListener('mousemove', handle_move);
+            function handleUp (evt) {
+                evt.stopPropagation();
+                document.removeEventListener('mouseup', handleUp);
+                document.removeEventListener('mousemove', handleMove);
             }
 
-            var el = cell('span', 'imgc-handles-el-' + t + '-' + i);
-            el.addEventListener('mousedown', handle_down);
+            const el = cell('span', `imgc-handles-el-${type}-${direction}`);
+
+            el.addEventListener('mousedown', handleDown);
             return el;
         }
 
@@ -256,150 +263,158 @@ module.exports = (
 //  IMAGE CROPPER
 //
 
-        function ImageCropper (selector, img_src, tmp_opts) {
-            if (!img_src || !selector) { return; }
+        function ImageCropper (selector, img_src, opts = {}) {
+            if (!img_src || !selector) return;
             //  Parse options
-            tmp_opts = tmp_opts || {};
-            Object.keys(pos_opts).forEach(
-                function (key) {
-                    opts[pos_opts[key][0]] = tmp_opts[key] || pos_opts[key][1];
-                }
-            );
-            if (opts.mcw > 80) { dim.x2 = dim.w = opts.mcw; }
-            if (opts.mch > 80) { dim.y2 = dim.h = opts.mch; }
-            if (opts.fs) {
-                if (opts.mcw > 80 || opts.mch > 80) {
-                    dim.x2 = dim.y2 = dim.w = dim.h = ((opts.mcw > opts.mch)
-                        ? opts.mcw
-                        : opts.mch
-                    );
+            Object.keys(opts || {}).forEach((key) => scope.options[key] = opts[key]);
+
+            if (scope.options.min_crop_width > 80) {
+                scope.meta.dimensions.x2 = scope.meta.dimensions.w = scope.options.min_crop_width;
+            }
+
+            if (scope.options.min_crop_height > 80) {
+                scope.meta.dimensions.y2 = scope.meta.dimensions.h = scope.options.min_crop_height;
+            }
+
+            if (scope.options.fixed_size) {
+                if (scope.options.min_crop_width > 80 || scope.options.min_crop_height > 80) {
+                    scope.meta.dimensions.x2 = scope.meta.dimensions.y2 = scope.meta.dimensions.w = scope.meta.dimensions.h = (scope.options.min_crop_width > scope.options.min_crop_height)
+                        ? scope.options.min_crop_width
+                        : scope.options.min_crop_height;
                 }
             }
 
             //  Get parent
             setParent.call(this, selector);
             //  Load image
-            img = new Image();
-            img.addEventListener('load', function (evt) {
-                this.create();
-            }.bind(this));
-            img.src = img_src;
+            scope.meta.img = new Image();
+            scope.meta.img.addEventListener('load', () => this.create());
+            scope.meta.img.src = img_src;
         }
 
         ImageCropper.prototype.create = function (selector) {
-            if (initialized) { return; }
-            if (!src_el) { setParent.call(this, selector); }
+            if (scope.$$initialized) return;
+            if (!scope.elements.source) setParent.call(this, selector);
 
             //  Calculate width and height based on max-width and max-height
-            var w = img.width;
-            var h = img.height;
+            let {width : img_w, height : img_h} = scope.meta.img;
 
-            if (w > opts.mw) {
-                h = ~~(opts.mw * h / w);
-                w = opts.mw;
+            if (img_w > scope.options.max_width) {
+                img_h = ~~(scope.options.max_width * img_h / img_w);
+                img_w = scope.options.max_width;
             }
-            if (h > opts.mh) {
-                w = ~~(opts.mh * w / h);
-                h = opts.mh;
+            if (img_h > scope.options.max_height) {
+                img_w = ~~(scope.options.max_height * img_w / img_h);
+                img_h = scope.options.max_height;
             }
             //  Set ratio to use in processing afterwards ( this is based on original image size )
-            ratio = {
-                w : img.naturalWidth / w,
-                h : img.naturalHeight / h,
+            scope.meta.ratio = {
+                w : scope.meta.img.naturalWidth / img_w,
+                h : scope.meta.img.naturalHeight / img_h,
             };
 
-            src_el.style.width = w + 'px';
-            src_el.style.height = h + 'px';
-            src_el.addEventListener('DOMNodeRemovedFromDocument', this.destroy);
+            scope.elements.source.style.width = `${img_w}px`;
+            scope.elements.source.style.height = `${img_h}px`;
+            scope.elements.source.addEventListener('DOMNodeRemovedFromDocument', this.destroy);
 
             //  Image for seeing
-            var img_wrap = cell('div', 'imgc-content', {}, src_el);
-            img_wrap.appendChild(img);
+            const img_wrap = cell('div', 'imgc-content', {}, scope.elements.source);
+
+            img_wrap.appendChild(scope.meta.img);
 
             //  Build SVG overlay
-            var overlay = cell('svg', null, { height : h, width : w }, src_el, true);
-            overlay_el = cell('path', null, { 'fill-rule' : 'evenodd' }, overlay, true);
+            const overlay = cell('svg', null, {
+                height : img_h,
+                width : img_w
+            }, scope.elements.source, true);
+
+            scope.elements.overlay = cell('path', null, {
+                'fill-rule' : 'evenodd'
+            }, overlay, true);
 
             //  Build handlers
-            handles_wrap = cell('div', ['imgc-handles', 'imgc-handles-' + opts.mo].join(' '), {}, src_el);
+            scope.elements.handles = cell('div', `imgc-handles imgc-handles-${scope.options.mode}`, {}, scope.elements.source);
 
-            for (var i = 0; i < (opts.fs ? 4 : 8); i++) {
-                handles_wrap.appendChild(new Handle(opts.fs ? 0 : ~~(i / 4), i % 4, handles_cbs[i]));
+            for (let i = 0; i < (scope.options.fixed_size ? 4 : 8); i++) {
+                scope.elements.handles.appendChild(new Handle(scope.options.fixed_size ? 0 : ~~(i / 4), i % 4, handles_cbs[i]));
             }
 
-            src_el.addEventListener('mousedown', document_mousedown);
+            scope.elements.source.addEventListener('mousedown', document_mousedown);
 
-            initialized = true;
+            scope.$$initialized = true;
             //  Reset dim
-            dim = {
+            scope.meta.dimensions = {
                 x : 0,
                 y : 0,
-                x2 : 0,
-                y2 : 0,
                 w : 0,
                 h : 0
             };
-            if (w === h) {
-                dim.x2 = dim.y2 = w;
-            } else if (w > h) {
-                dim.x2 = h;
-                dim.y2 = (opts.fs) ? h : h - (w - h);
-            } else if (h > w) {
-                dim.x2 = (opts.fs) ? w : w - (h - w);
-                dim.y2 = w;
+
+            if (img_w === img_h) {
+                scope.meta.dimensions.x2 = scope.meta.dimensions.y2 = img_w;
+            } else if (img_w > img_h) {
+                scope.meta.dimensions.x2 = img_h;
+                scope.meta.dimensions.y2 = (scope.options.fixed_size) ? img_h : img_h - (img_w - img_h);
+            } else if (img_h > img_w) {
+                scope.meta.dimensions.x2 = (scope.meta.fixed_size) ? img_w : img_w - (img_h - img_w);
+                scope.meta.dimensions.y2 = img_w;
             }
 
             //  Render
             render();
-            if (opts.cr) {
-                opts.cr({
-                    w : w,
-                    h : h
-                });
-            }
+            scope.options.create_cb({
+                w : img_w,
+                h : img_h
+            });
         };
 
-        ImageCropper.prototype.destroy = function () {
-            if (!initialized) { return; }
+        ImageCropper.prototype.destroy = () => {
+            if (!scope.$$initialized) return;
 
-            if (src_el) {
-                src_el.removeEventListener('DOMNodeRemovedFromDocument', this.destroy);
-                src_el.removeEventListener('mousedown', document_mousedown);
+            if (scope.elements.source) {
+                scope.elements.source.removeEventListener('DOMNodeRemovedFromDocument', this);
+                scope.elements.source.removeEventListener('mousedown', document_mousedown);
 
-                while (src_el.firstChild) {
-                    src_el.removeChild(src_el.firstChild);
+                while (scope.elements.source.firstChild) {
+                    scope.elements.source.removeChild(scope.elements.source.firstChild);
                 }
-                src_el = img = handles_wrap = overlay_el = null;
+                scope.elements.source = scope.meta.img = scope.elements.handles = scope.elements.overlay = null;
             }
 
-            initialized = false;
-            if (opts.de) {
-                opts.de();
-            }
+            scope.$$initialized = false;
+
+            if (scope.options.destroy_cb) scope.options.destroy_cb();
         };
 
-        ImageCropper.prototype.crop = function (mime_type, quality) {
-            if (!mime_type || (mime_type !== 'image/jpeg' && mime_type !== 'image/png')) {
-                mime_type = 'image/jpeg';
-            }
-            if (!quality || quality < 0 || quality > 1) {quality = 1;}
+        ImageCropper.prototype.crop = (mime_type = 'image/jpeg', quality = 1) => {
+            mime_type = (['image/jpeg', 'image/png'].indexOf(mime_type) !== -1)
+                ? 'image/jpeg'
+                : mime_type;
 
-            var canvas = cell('canvas', null, { width : dim.w, height : dim.h });
-            var ctx = canvas.getContext('2d');
-            ctx.drawImage(
-                img,
-                ratio.w * dim.x,
-                ratio.h * dim.y,
-                ratio.w * dim.w,
-                ratio.h * dim.h,
+            quality = (quality < 0 || quality > 1)
+                ? 1
+                : quality;
+
+            const {x, y, w, h} = scope.meta.dimensions;
+            const canvas = cell('canvas', null, {
+                width : w,
+                height : h
+            });
+
+            canvas.getContext('2d').drawImage(
+                scope.meta.img,
+                scope.meta.ratio.w * x,
+                scope.meta.ratio.h * y,
+                scope.meta.ratio.w * w,
+                scope.meta.ratio.h * h,
                 0,
                 0,
-                dim.w,
-                dim.h
+                w,
+                h
             );
+
             return canvas.toDataURL(mime_type, quality);
         };
 
         return ImageCropper;
-    }
-)();
+})();
