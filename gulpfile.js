@@ -1,17 +1,19 @@
 'use strict';
 
 const gulp = require('gulp');
+const runSequence = require('run-sequence');
+
 const rollup = require('gulp-rollup');
 const babel = require('rollup-plugin-babel');
 const eslint = require('rollup-plugin-eslint');
 const resolve = require('rollup-plugin-node-resolve');
 const commonjs = require('rollup-plugin-commonjs');
 const uglify = require('rollup-plugin-uglify');
+
 const rename = require('gulp-rename');
 const scssLint = require('gulp-scss-lint');
 const sass = require('gulp-sass');
 const autoprefixer = require('gulp-autoprefixer');
-const runSequence = require('run-sequence');
 const nodemon = require('gulp-nodemon');
 const livereload = require('gulp-livereload');
 
@@ -104,7 +106,6 @@ const config = {
 //  WATCH
 //
 
-    //  Watch the necessary directories for changes and rebuild source files,
     gulp.task('watch', (cb) => {
         livereload.listen();
         gulp.watch(config.scss.src, ['scss']);
@@ -113,7 +114,6 @@ const config = {
         cb();
     });
 
-    //  Build all files + notify user.
     gulp.task('build', [], (cb) => runSequence('js', 'scss', 'example', cb));
 
     //  Wrapper task for building all files, and watching for changes.
