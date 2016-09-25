@@ -17,14 +17,6 @@
         res.sendFile(__dirname + '/example/index.html');
     });
 
-    app.get('/file', function (req, res, next) {
-        res.sendFile(__dirname + '/example/index_file.html');
-    });
-
-    app.get('/regular', function (req, res, next) {
-        res.sendFile(__dirname + '/example/index_regular.html');
-    });
-
 //  SERVER
 
     let server = require('http').Server(app);
