@@ -1,117 +1,120 @@
 'use strict';
 
-//
-//  SETUP
-//
+const gulp = require('gulp');
+const rollup = require('gulp-rollup');
+const babel = require('rollup-plugin-babel');
+const eslint = require('rollup-plugin-eslint');
+const resolve = require('rollup-plugin-node-resolve');
+const commonjs = require('rollup-plugin-commonjs');
+const uglify = require('rollup-plugin-uglify');
+const rename = require('gulp-rename');
+const scssLint = require('gulp-scss-lint');
+const sass = require('gulp-sass');
+const autoprefixer = require('gulp-autoprefixer');
+const runSequence = require('run-sequence');
+const nodemon = require('gulp-nodemon');
+const livereload = require('gulp-livereload');
 
-    const gulp = require('gulp');
-    const browserify = require('browserify');
-    const source = require('vinyl-source-stream');
-
-    const $ = require('gulp-load-plugins')({
-        pattern: ['*'],
-        replaceString: /\bgulp[\-.]/
-    });
-
-    const onError = (err) => {
-        $.notify({
-            title: 'Gulp', message: 'Error: <%= err.message %>'
-        });
-    };
-
-    const config = {
-        eslintrc : '.eslintrc',
-        scsslint : '.scss-lint.yml',
-        js : {
-            src : ['src/js/**/**.js'],
-            dest : 'dist/js/',
-        },
-        scss : {
-            src : ['src/sass/**/**.scss'],
-            dest : 'dist/css/',
-        },
-        example : {
-            src : 'example/src/**.js',
-            dest : 'example/src/',
-        },
-    }
+const config = {
+    js : {
+        src : ['src/js/**/**.js'],
+        dest : 'build/js/',
+        entry : './src/js/imagecrop.js',
+    },
+    example : {
+        src : ['src/example/**/**.js', 'build/js/**/**.js'],
+        dest : 'example/',
+        entry : 'src/example/app.js'
+    },
+    scss : {
+        src : ['src/sass/**/**.scss'],
+        dest : 'build/css/',
+    },
+}
 
 //
-//  TASKS : JAVASCRIPT
+//  JS
 //
 
-    gulp.task('js', (cb) => gulp.src(config.js.src)
-        .pipe($.plumber({
-            errorHandler : onError
-        }))
-        .pipe($.eslint(config.eslintrc))
-        .pipe($.eslint.format())
-        .pipe($.babel({
-            presets : ['es2015'],
-            plugins : [
-                'check-es2015-constants',
-                'transform-minify-booleans',
-                'transform-property-literals',
-                'transform-member-expression-literals',
-                'transform-merge-sibling-variables'
-            ]
-        }))
-        .pipe($.uglify())
-        .pipe($.rename({
+    function doRollup (component) {
+        return gulp.src(component.src)
+        .pipe(
+            rollup({
+                entry: component.entry,
+                format: 'iife',
+                moduleName: 'ImageCropper',
+                plugins: [
+                    resolve({
+                        jsnext: true,
+                        main: true,
+                        browser: true,
+                    }),
+                    commonjs(),
+                    eslint('.eslintrc'),
+                    babel({
+                        presets: ['es2015-rollup'],
+                        plugins : [
+                            'check-es2015-constants',
+                            'transform-minify-booleans',
+                            'transform-property-literals',
+                            'transform-member-expression-literals',
+                            'transform-merge-sibling-variables'
+                        ]
+                    }),
+                    uglify()
+                ],
+            })
+        )
+        .pipe(rename({
             suffix : '.min'
         }))
-        .pipe(gulp.dest(config.js.dest))
-        .pipe(gulp.dest(config.example.dest))
-    );
+        .pipe(gulp.dest(component.dest));
+    }
+
+    gulp.task('js', () => doRollup(config.js));
+    gulp.task('example', () => doRollup(config.example));
 
 //
-//  TASKS : SCSS
+//  SCSS
 //
 
-    gulp.task('scss', (cb) => gulp.src(config.scss.src)
-        .pipe($.plumber({
-            errorHandler : onError
+    gulp.task('scss', () => gulp.src(config.scss.src)
+        .pipe(scssLint({
+            config : '.scss-lint.yml'
         }))
-        .pipe($.scssLint({
-            config : config.scsslint
-        }))
-        .pipe($.sass({
+        .pipe(sass({
             outputStyle : 'compressed'
         }))
-        .pipe($.autoprefixer())
-        .pipe($.rename({
+        .pipe(autoprefixer())
+        .pipe(rename({
             suffix : '.min'
         }))
         .pipe(gulp.dest(config.scss.dest))
     );
 
-//  EXAMPLE
+    gulp.task('serve', (cb) => nodemon({
+        script : 'server.js',
+        ext : 'js css html',
+        watch : [
+            'server'
+        ]
+    }));
 
-gulp.task('example', (cb) => browserify('example/src/app.js')
-    .bundle()
-    .pipe(source('app.js'))
-    .pipe(gulp.dest('./example/'))
-);
+//
+//  WATCH
+//
 
-//  Just throw a quick notification in the CLI when everything was built.
-gulp.task('build:notify', (cb) => {
-    $.util.log($.util.colors.green('Files successfully parsed!'));
-    cb();
-});
+    //  Watch the necessary directories for changes and rebuild source files,
+    gulp.task('watch', (cb) => {
+        livereload.listen();
+        gulp.watch(config.scss.src, ['scss']);
+        gulp.watch(config.js.src, ['js', 'example']);
+        gulp.watch(config.example.src, ['js', 'example'])
+        cb();
+    });
 
-//  Watch the necessary directories for changes and rebuild source files,
-gulp.task('watch', (cb) => {
-    gulp.watch(config.scss.src, ['scss']);
-    gulp.watch(config.js.src, ['js']);
-    gulp.watch(config.example.src, ['js', 'scss', 'example']);
-    cb();
-});
+    //  Build all files + notify user.
+    gulp.task('build', [], (cb) => runSequence('js', 'scss', 'example', cb));
 
-//  Build all files + notify user.
-gulp.task('build', [], (cb) => $.runSequence(['js', 'scss'], ['build:notify'], cb));
-
-//  Wrapper task for building all files, and watching for changes.
-gulp.task('default', (cb) => $.runSequence('build', 'watch', cb));
-
-//  Production task
-gulp.task('production', (cb) => $.runSequence('build', cb));
+    //  Wrapper task for building all files, and watching for changes.
+    gulp.task('default', (cb) => runSequence('build', 'watch', 'serve', cb));

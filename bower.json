@@ -6,8 +6,8 @@
   ],
   "description": "Lightweight image cropper, with zero dependency requirements",
   "main": [
-    "build/imagecrop.min.js",
-    "build/imagecrop.min.css"
+    "build/js/imagecrop.min.js",
+    "build/css/imagecrop.min.css"
   ],
   "keywords": [
     "imagecropper",
