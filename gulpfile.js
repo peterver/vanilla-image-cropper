@@ -3,6 +3,8 @@
 const gulp = require('gulp');
 const runSequence = require('run-sequence');
 
+const sync = require('browser-sync').create();
+
 const rollup = require('gulp-rollup');
 const babel = require('rollup-plugin-babel');
 const eslint = require('rollup-plugin-eslint');
@@ -14,8 +16,6 @@ const rename = require('gulp-rename');
 const scssLint = require('gulp-scss-lint');
 const sass = require('gulp-sass');
 const autoprefixer = require('gulp-autoprefixer');
-const nodemon = require('gulp-nodemon');
-const livereload = require('gulp-livereload');
 
 const config = {
     js : {
@@ -69,8 +69,7 @@ const config = {
         )
         .pipe(rename({
             suffix : '.min'
-        }))
-        .pipe(gulp.dest(component.dest));
+        }));
     }
 
     gulp.task('js', () => doRollup(config.js));
@@ -94,27 +93,21 @@ const config = {
         .pipe(gulp.dest(config.scss.dest))
     );
 
-    gulp.task('serve', (cb) => nodemon({
-        script : 'server.js',
-        ext : 'js css html',
-        watch : [
-            'server'
-        ]
-    }));
+    gulp.task('reload', () => sync.reload());
 
-//
-//  WATCH
-//
+    gulp.task('serve', ['build'], (cb) => {
+        sync.init({
+            server : ['./example', './build'],
+            index : 'index.html',
+            files : ['./build/js/imagecrop.min.js', './build/css/imagecrop.min.css', './example/index.html', './example/app.min.js']
+        });
 
-    gulp.task('watch', (cb) => {
-        livereload.listen();
-        gulp.watch(config.scss.src, ['scss']);
-        gulp.watch(config.js.src, ['js', 'example']);
-        gulp.watch(config.example.src, ['js', 'example'])
-        cb();
+        gulp.watch(config.scss.src, () => runSequence('scss', 'reload'));
+        gulp.watch(config.js.src, () => runSequence(['js', 'example'], 'reload'));
+        gulp.watch(config.example.src, () => runSequence(['js', 'example'], 'reload'));
     });
 
-    gulp.task('build', [], (cb) => runSequence('js', 'scss', 'example', cb));
+    gulp.task('build', (cb) => runSequence('js', 'scss', 'example', cb));
 
     //  Wrapper task for building all files, and watching for changes.
-    gulp.task('default', (cb) => runSequence('build', 'watch', 'serve', cb));
+    gulp.task('default', () => runSequence('serve'));
