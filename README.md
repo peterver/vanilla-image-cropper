@@ -1,4 +1,4 @@
-# Lightweight Javascript ImageCropper 1.1.2
+# Lightweight Javascript ImageCropper
 
 [![Build Status](https://travis-ci.org/peterver/image-crop.svg?branch=master)](https://travis-ci.org/peterver/image-crop)
 [![npm](https://img.shields.io/npm/v/elessar.svg)](https://www.npmjs.com/package/image_cropper)
