@@ -1,6 +1,7 @@
 # Lightweight Javascript ImageCropper 1.1.2
 
 [![Build Status](https://travis-ci.org/peterver/image-crop.svg?branch=master)](https://travis-ci.org/peterver/image-crop)
+[![npm](https://img.shields.io/npm/v/elessar.svg)](https://www.npmjs.com/package/image_cropper)
 
 A lightweight javascript imagecropper written in vanilla js
 with zero-dependency injection that builds itself into an object.
