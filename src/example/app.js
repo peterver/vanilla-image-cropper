@@ -1,9 +1,27 @@
-// import ImageCropper from '../../build/js/imagecrop.min.js';
+'use strict';
 
-var cropper = new ImageCropper();
+//  Setup Image cropper
 
-// import ImageCropper from '../../dist/js/imagecrop.min.js';
-// var ImageCropper = require('../../build/js/imagecrop.min.js');
+const img_c = new ImageCropper('.test-imagecrop');
+
+function addListener (name, cb) {
+    const el = document.querySelector(`.${name}`);
+
+    if (!el) return;
+    el.addEventListener('click', cb);
+}
+
+//  Setup Buttons
+addListener('crop-button', img_c.crop);
+addListener('create-button', img_c.create);
+addListener('destroy-button', img_c.destroy);
+
+// var create_btn = document.querySelector('.create-button');
+// create_btn.addEventListener('click', onCreateHandler);
+// create_btn.style.display = 'none';
+
+// var destroy_btn = document.querySelector('.destroy-button');
+// destroy_btn.addEventListener('click', onDestroyHandler);
 
 // var dimensions = null;
 // var is_active = false;
