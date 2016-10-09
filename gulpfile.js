@@ -24,9 +24,9 @@ const config = {
         entry : './src/js/imagecrop.js',
     },
     example : {
-        src : ['src/example/**/**.js', 'build/js/**/**.js'],
-        dest : 'example/',
-        entry : 'src/example/app.js'
+        src : ['src/example/**/**.js'],
+        dest : './example/',
+        entry : './src/example/app.js'
     },
     scss : {
         src : ['src/sass/**/**.scss'],
@@ -60,7 +60,6 @@ const config = {
                             'transform-minify-booleans',
                             'transform-property-literals',
                             'transform-member-expression-literals',
-                            'transform-merge-sibling-variables'
                         ]
                     }),
                     uglify()
@@ -69,7 +68,8 @@ const config = {
         )
         .pipe(rename({
             suffix : '.min'
-        }));
+        }))
+        .pipe(gulp.dest(component.dest));
     }
 
     gulp.task('js', () => doRollup(config.js));
@@ -103,8 +103,8 @@ const config = {
         });
 
         gulp.watch(config.scss.src, () => runSequence('scss', 'reload'));
-        gulp.watch(config.js.src, () => runSequence(['js', 'example'], 'reload'));
-        gulp.watch(config.example.src, () => runSequence(['js', 'example'], 'reload'));
+        gulp.watch(config.js.src, () => runSequence('js', 'reload'));
+        gulp.watch(config.example.src, () => runSequence('example', 'reload'));
     });
 
     gulp.task('build', (cb) => runSequence('js', 'scss', 'example', cb));

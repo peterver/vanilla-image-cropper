@@ -10,7 +10,8 @@
     "sourceType": "module"
   },
   "globals": {
-    "module" : true
+    "module" : true,
+    "ImageCropper" : true,
   },
   "rules": {
     "eqeqeq": 1,
@@ -24,7 +25,6 @@
     ],
     "no-caller": 2,
     "no-irregular-whitespace": 2,
-    "no-new": 2,
     "valid-typeof": 2,
     "no-shadow": 2,
     "no-undef": 1,

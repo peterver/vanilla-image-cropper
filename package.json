@@ -39,7 +39,6 @@
   "devDependencies": {
     "babel-plugin-check-es2015-constants": "^6.8.0",
     "babel-plugin-transform-member-expression-literals": "^6.8.0",
-    "babel-plugin-transform-merge-sibling-variables": "0.0.2",
     "babel-plugin-transform-minify-booleans": "^6.8.0",
     "babel-plugin-transform-property-literals": "^6.8.0",
     "babel-preset-es2015-rollup": "^1.2.0",
@@ -47,7 +46,7 @@
     "gulp": "^3.9.1",
     "gulp-autoprefixer": "^3.1.1",
     "gulp-rename": "^1.2.2",
-    "gulp-rollup": "^2.5.0",
+    "gulp-rollup": "^2.5.1",
     "gulp-sass": "^2.3.2",
     "gulp-scss-lint": "^0.4.0",
     "jasmine-core": "^2.5.2",
