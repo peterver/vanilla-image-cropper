@@ -7,24 +7,64 @@ import {convertGlobalToLocal} from '../../utils/Event';
 
     const HANDLES = Object.freeze([
         (pos, dim, opts) => { //  TOP LEFT
+            const {x} = dim;
+
             HANDLES[7](pos, dim, opts);
 
             if (!opts.fixed_size) HANDLES[4](pos, dim, opts);
+            else {
+                if (dim.y + dim.x - x < 0) {
+                    dim.x = x - dim.y;
+                    dim.y = 0;
+                } else {
+                    dim.y += dim.x - x;
+                }
+            }
         },
         (pos, dim, opts) => { //  TOP RIGHT
+            const {x2} = dim;
+
             HANDLES[5](pos, dim, opts);
 
             if (!opts.fixed_size) HANDLES[4](pos, dim, opts);
+            else {
+                if (dim.y - dim.x2 + x2 < 0) {
+                    dim.x2 = x2 + dim.y;
+                    dim.y = 0;
+                } else {
+                    dim.y -= dim.x2 - x2;
+                }
+            }
         },
         (pos, dim, opts) => { //  BOTTOM RIGHT
+            const {x2} = dim;
+
             HANDLES[5](pos, dim, opts);
 
             if (!opts.fixed_size) HANDLES[6](pos, dim, opts);
+            else {
+                if (dim.y2 + dim.x2 - x2 > dim.h) {
+                    dim.x2 = x2 + (dim.h - dim.y2);
+                    dim.y2 = dim.h;
+                } else {
+                    dim.y2 += dim.x2 - x2;
+                }
+            }
         },
         (pos, dim, opts) => { //  BOTTOM LEFT
+            const {x} = dim;
+
             HANDLES[7](pos, dim, opts);
 
             if (!opts.fixed_size) HANDLES[6](pos, dim, opts);
+            else {
+                if (dim.y2 + (x - dim.x) > dim.h) {
+                    dim.x = x - (dim.h - dim.y2);
+                    dim.y2 = dim.h;
+                } else {
+                    dim.y2 -= dim.x - x;
+                }
+            }
         },
         //  TOP
         (pos, dim, opts) => dim.y = (dim.y2 - pos.y < opts.min_crop_height)
