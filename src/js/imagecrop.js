@@ -6,6 +6,10 @@ import {hasValue} from './utils/Object';
 import {cell, isElement} from './utils/Dom';
 import {MODES, STATES} from './constants';
 
+let el_content = null;
+let el_overlay = null;
+let el_handles = null;
+
 let scope = Object.seal({
     $$parent : null,
     $$state : STATES.OFFLINE,
@@ -23,11 +27,6 @@ let scope = Object.seal({
             h : 1,
         },
     },
-    elements : {
-        content : null,
-        overlay : null,
-        handles : null
-    },
     options : {
         update_cb : () => {},
         create_cb : () => {},
@@ -44,7 +43,7 @@ let scope = Object.seal({
 function render () {
     if (scope.$$state !== STATES.LOADING) return;
 
-    const img = scope.elements.content.$$source;
+    const img = el_content.$$source;
 
     //  Calculate width and height based on max-width and max-height
     let {naturalWidth : w, naturalHeight : h} = img;
@@ -110,8 +109,8 @@ function update (evt) {
     if (dim.y2 > dim.h) dim.y2 = dim.h;
 
     //  Patch updates
-    scope.elements.overlay.update(dim, scope.options);
-    scope.elements.handles.update(dim, scope.options);
+    el_overlay.update(dim, scope.options);
+    el_handles.update(dim, scope.options);
 
     scope.options.update_cb(dim);
 }
@@ -137,16 +136,16 @@ export default class ImageCropper {
         scope.$$parent.addEventListener('source:dimensions', update, true);
 
         //  Create Wrapper elements
-        scope.elements.content = new Content(scope);
-        scope.elements.overlay = new Overlay(scope);
-        scope.elements.handles = new Handles(scope);
+        el_content = new Content(scope);
+        el_overlay = new Overlay(scope);
+        el_handles = new Handles(scope);
 
         this.setImage(href);
     }
 
     setImage (href) {
         scope.$$state = STATES.LOADING;
-        scope.elements.content.source(href);
+        el_content.source(href);
     }
 
     destroy () {
@@ -183,7 +182,7 @@ export default class ImageCropper {
             height : h
         });
 
-        canvas.getContext('2d').drawImage(document.querySelector('img'), rw * x, rh * y, rw * w, rh * h, 0, 0, w, h);
+        canvas.getContext('2d').drawImage(el_content.$$source, rw * x, rh * y, rw * w, rh * h, 0, 0, w, h);
 
         return canvas.toDataURL(mime_type, quality);
     }
