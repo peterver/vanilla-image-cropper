@@ -6,12 +6,7 @@ export function values (obj) {
 }
 
 export function hasValue (obj, val_to_find) {
-    let contains = false;
-
-    values(obj).forEach((val) => {
-        if (contains || val === val_to_find) {
-            contains = true;
-        }
-    });
-    return contains;
+    return !!((Array.isArray(obj)
+        ? obj
+        : values(obj)).indexOf(val_to_find) !== -1)
 }
