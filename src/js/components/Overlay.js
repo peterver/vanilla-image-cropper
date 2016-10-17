@@ -11,8 +11,8 @@ export default class Overlay {
     }
 
     update ({x, x2, y, y2, w, h}, {mode}) {
-        const half_w = w * 0.5; //  Half width
-        const half_h = h * 0.5; //  Half height
+        const half_w = (x2 - x) * 0.5; //  Half width
+        const half_h = (y2 - y) * 0.5; //  Half height
         const crop_w = x2 - x;  //  Crop Width
         const crop_h = y2 - y;  //  Crop Height
 
