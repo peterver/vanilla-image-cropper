@@ -48,15 +48,16 @@ function render () {
 
     //  Calculate width and height based on max-width and max-height
     let {naturalWidth : w, naturalHeight : h} = img;
+    const {max_width : max_w, max_height: max_h} = scope.options;
 
-    if (w > scope.options.max_width) {
-        h = ~~(scope.options.max_width * h / w);
-        w = scope.options.max_width;
+    if (w > max_w) {
+        h = ~~(max_w * h / w);
+        w = max_w;
     }
 
-    if (h > scope.options.max_height) {
-        w = ~~(scope.options.max_height * w / h);
-        h = scope.options.max_height;
+    if (h > max_h) {
+        w = ~~(max_h * w / h);
+        h = max_h;
     }
 
     //  Set ratio to use in processing afterwards ( this is based on original image size )
@@ -66,14 +67,30 @@ function render () {
     };
 
     //  Set width/height
-    img.width = w;
-    img.height = h;
+    scope.meta.dimensions.w = img.width = w;
+    scope.meta.dimensions.h = img.height = h;
 
     scope.$$state = STATES.READY;
 
     //  Initialize dimensions
-    scope.meta.dimensions.x2 = scope.meta.dimensions.w = w;
-    scope.meta.dimensions.y2 = scope.meta.dimensions.h = h;
+    if (scope.options.fixed_size) {
+        const {min_crop_width : mcw, min_crop_height : mch} = scope.options;
+        const rad = (mcw > mch
+            ? mcw
+            : mch) * .5;
+
+        const x_center = w * .5;
+        const y_center = h * .5;
+
+        scope.meta.dimensions.x = x_center - rad;
+        scope.meta.dimensions.x2 = x_center + rad;
+        scope.meta.dimensions.y = y_center - rad;
+        scope.meta.dimensions.y2 = y_center + rad;
+
+    } else {
+        scope.meta.dimensions.x2 = scope.meta.dimensions.w = w;
+        scope.meta.dimensions.y2 = scope.meta.dimensions.h = h;
+    }
 
     update();
 
