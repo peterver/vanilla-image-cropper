@@ -76,6 +76,8 @@ function render () {
     scope.meta.dimensions.y2 = scope.meta.dimensions.h = h;
 
     update();
+
+    scope.options.create_cb({w, h});
 }
 
 function update (evt) {
@@ -93,6 +95,8 @@ function update (evt) {
     //  Patch updates
     scope.elements.overlay.update(dim, scope.options);
     scope.elements.handles.update(dim, scope.options);
+
+    scope.options.update_cb(dim);
 }
 
 export default class ImageCropper {
@@ -139,6 +143,8 @@ export default class ImageCropper {
             //  Clean parent
             scope.$$parent.classList.remove('imgc');
         }
+
+        scope.options.destroy_cb();
     }
 
     crop (mime_type = 'image/jpeg', quality = 1) {
