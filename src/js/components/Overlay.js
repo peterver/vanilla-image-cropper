@@ -2,8 +2,8 @@ import {MODES} from '../constants';
 import {cell} from '../utils/Dom';
 
 export default class Overlay {
-    constructor (parent) {
-        this.$$view = cell('svg', ['imgc-overlay'], {}, parent, true);
+    constructor (scope) {
+        this.$$view = cell('svg', ['imgc-overlay'], {}, scope.$$parent, true);
 
         this.$$path = cell('path', null, {
             'fill-rule' : 'evenodd'

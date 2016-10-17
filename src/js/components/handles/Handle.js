@@ -5,130 +5,83 @@ import {convertGlobalToLocal} from '../../utils/Event';
 //  CALLBACKS FOR EACH TYPE OF HANDLE
 //
 
-    const HANDLES_CBS = Object.freeze([
-        (evt, dimensions, options) => { //  TOP LEFT
-            const {x} = dimensions.x;
+    const HANDLES = Object.freeze([
+        (pos, dim, opts) => { //  TOP LEFT
+            HANDLES[7](pos, dim, opts);
 
-            HANDLES_CBS[7](evt, dimensions, options);
-
-            if (!options.fixed_size) HANDLES_CBS[4](evt, dimensions, options);
-            else {
-                if (dimensions.y + dimensions.x - x < 0) {
-                    dimensions.x = x - dimensions.y;
-                    dimensions.y = 0;
-                } else {
-                    dimensions.y += dimensions.x - x;
-                }
-            }
+            if (!opts.fixed_size) HANDLES[4](pos, dim, opts);
         },
-        (evt, dimensions, options) => { //  TOP RIGHT
-            const {x2} = dimensions;
+        (pos, dim, opts) => { //  TOP RIGHT
+            HANDLES[5](pos, dim, opts);
 
-            HANDLES_CBS[5](evt, dimensions, options);
-
-            if (!options.fixed_size) HANDLES_CBS[4](evt, dimensions, options);
-            else {
-                if (dimensions.y - dimensions.x2 + x2 < 0) {
-                    dimensions.x2 = x2 + dimensions.y;
-                    dimensions.y = 0;
-                } else {
-                    dimensions.y -= dimensions.x2 - x2;
-                }
-            }
+            if (!opts.fixed_size) HANDLES[4](pos, dim, opts);
         },
-        (evt, dimensions, options, source) => { //  BOTTOM RIGHT
-            const {x2} = dimensions;
+        (pos, dim, opts) => { //  BOTTOM RIGHT
+            HANDLES[5](pos, dim, opts);
 
-            HANDLES_CBS[5](evt, dimensions, options);
-
-            if (!options.fixed_size) HANDLES_CBS[6](evt, dimensions, options);
-            else {
-                const source_dimensions = source.getBoundingClientRect();
-
-                if (dimensions.y2 + dimensions.x2 - x2 > source_dimensions.height) {
-                    dimensions.x2 = x2 + (source_dimensions.height - dimensions.y2);
-                    dimensions.y2 = source_dimensions.height;
-                } else {
-                    dimensions.y2 += dimensions.x2 - x2;
-                }
-            }
+            if (!opts.fixed_size) HANDLES[6](pos, dim, opts);
         },
-        (evt, dimensions, options, source) => { //  BOTTOM LEFT
-            const {x} = dimensions;
+        (pos, dim, opts) => { //  BOTTOM LEFT
+            HANDLES[7](pos, dim, opts);
 
-            HANDLES_CBS[7](evt, dimensions, options);
-
-            if (!options.fixed_size) HANDLES_CBS[6](evt, dimensions, options);
-            else {
-                const source_dimensions = source.getBoundingClientRect();
-
-                if (dimensions.y2 + (x - dimensions.x) > source_dimensions.height) {
-                    dimensions.x = x - (source_dimensions.height - dimensions.y2);
-                    dimensions.y2 = source_dimensions.height;
-                } else {
-                    dimensions.y2 -= dimensions.x - x;
-                }
-            }
+            if (!opts.fixed_size) HANDLES[6](pos, dim, opts);
         },
         //  TOP
-        (evt, dimensions, options) => dimensions.y = (dimensions.y2 - evt.y < options.min_crop_height)
-            ? dimensions.y2 - options.min_crop_height
-            : evt.y,
+        (pos, dim, opts) => dim.y = (dim.y2 - pos.y < opts.min_crop_height)
+            ? dim.y2 - opts.min_crop_height
+            : pos.y,
         //  RIGHT
-        (evt, dimensions, options) => dimensions.x2 = (evt.x - dimensions.x < options.min_crop_width)
-            ? dimensions.x + options.min_crop_width
-            : evt.x,
+        (pos, dim, opts) => dim.x2 = (pos.x - dim.x < opts.min_crop_width)
+            ? dim.x + opts.min_crop_width
+            : pos.x,
         //  BOTTOM
-        (evt, dimensions, options) => dimensions.y2 = (evt.y - dimensions.y < options.min_crop_height)
-            ? dimensions.y + options.min_crop_height
-            : evt.y,
+        (pos, dim, opts) => dim.y2 = (pos.y - dim.y < opts.min_crop_height)
+            ? dim.y + opts.min_crop_height
+            : pos.y,
         //  LEFT
-        (evt, dimensions, options) => dimensions.x = (dimensions.x2 - evt.x < options.min_crop_width)
-            ? dimensions.x2 - options.min_crop_width
-            : evt.x,
+        (pos, dim, opts) => dim.x = (dim.x2 - pos.x < opts.min_crop_width)
+            ? dim.x2 - opts.min_crop_width
+            : pos.x,
     ]);
-
-//
-//  MOUSE EVENTS
-//
-
-    function handleMouseDown (evt) {
-        evt.stopPropagation();
-
-        document.addEventListener('mouseup', handleMouseUp.bind(this));
-        document.addEventListener('mousemove', handleMouseMove.bind(this));
-    }
-
-    function handleMouseUp (evt) {
-        evt.stopPropagation();
-
-        document.removeEventListener('mouseup', handleMouseUp.bind(this));
-        document.removeEventListener('mousemove', handleMouseMove.bind(this));
-    }
-
-    function handleMouseMove (evt) {
-        evt.stopPropagation();
-
-        HANDLES_CBS[this.$$type](
-            convertGlobalToLocal(evt, this.$$scope.elements.source.getBoundingClientRect()),
-            this.$$scope.meta.dimensions,
-            this.$$scope.options,
-            this.$$scope.elements.source
-        );
-    }
 
 //
 //  PUBLIC
 //
 
     export default class Handle {
-        constructor (parent, type) {
+        constructor (parent, type, scope) {
             this.$$view = cell('span', ['imgc-handles-el', `imgc-handles-el-${~~(type / 4)}-${type % 4}`], {}, parent);
 
-            //  Bootstrap element
-            this.$$view.addEventListener('mousedown', handleMouseDown.bind(this));
+            //  Down handler
+            function handleMouseDown (evt) {
+                evt.stopPropagation();
 
-            //  Set options
-            this.$$type = type;
+                document.addEventListener('mouseup', handleMouseUp);
+                document.addEventListener('mousemove', handleMouseMove);
+            }
+
+            //  Up handler
+            function handleMouseUp (evt) {
+                evt.stopPropagation();
+
+                document.removeEventListener('mouseup', handleMouseUp);
+                document.removeEventListener('mousemove', handleMouseMove);
+            }
+
+            //  Move handler
+            function handleMouseMove (evt) {
+                evt.stopPropagation();
+
+                HANDLES[type](
+                    convertGlobalToLocal(evt, scope.$$parent.getBoundingClientRect()),
+                    scope.meta.dimensions,
+                    scope.options
+                );
+
+                parent.dispatchEvent(new CustomEvent('source:dimensions'));
+            }
+
+            //  Bootstrap element
+            this.$$view.addEventListener('mousedown', handleMouseDown);
         }
     }

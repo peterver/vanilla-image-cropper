@@ -4,13 +4,13 @@ import Handle from './Handle';
 import {hasValue} from '../../utils/Object';
 
 export default class Handles {
-    constructor (parent, {mode, fixed_size}) {
-        if (!hasValue(MODES, mode)) throw new TypeError(`Mode ${mode} doesnt exist`);
+    constructor (scope) {
+        if (!hasValue(MODES, scope.options.mode)) throw new TypeError(`Mode ${scope.options.mode} doesnt exist`);
 
-        this.$$view = cell('div', ['imgc-handles', `imgc-handles-${mode}`], {}, parent);
+        this.$$view = cell('div', ['imgc-handles', `imgc-handles-${scope.options.mode}`], {}, scope.$$parent);
 
-        for (let i = 0; i < (fixed_size ? 4 : 8); i++) {
-            new Handle(this.$$view, i);
+        for (let i = 0; i < (scope.options.fixed_size ? 4 : 8); i++) {
+            new Handle(this.$$view, i, scope);
         }
     }
 

@@ -82,8 +82,9 @@ function render () {
     update();
 }
 
-function update () {
+function update (evt) {
     if (scope.$$state !== STATES.READY) return;
+    if (evt) evt.stopPropagation();
 
     const {dimensions : dim} = scope.meta;
 
@@ -116,11 +117,12 @@ export default class ImageCropper {
         //  Create a Content instance
         scope.$$parent.addEventListener('DOMNodeRemovedFromDocument', this.destroy);
         scope.$$parent.addEventListener('source:fetched', render, true);
+        scope.$$parent.addEventListener('source:dimensions', update, true);
 
         //  Create Wrapper elements
-        scope.elements.content = new Content(scope.$$parent, scope.options);
-        scope.elements.overlay = new Overlay(scope.$$parent, scope.options);
-        scope.elements.handles = new Handles(scope.$$parent, scope.options);
+        scope.elements.content = new Content(scope);
+        scope.elements.overlay = new Overlay(scope);
+        scope.elements.handles = new Handles(scope);
 
         this.setImage(href);
     }

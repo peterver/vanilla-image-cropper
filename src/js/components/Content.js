@@ -1,8 +1,8 @@
 import {cell} from '../utils/Dom';
 
 export default class Content {
-    constructor (parent) {
-        this.$$view = cell('div', ['imgc-content'], {}, parent);
+    constructor (scope) {
+        this.$$view = cell('div', ['imgc-content'], {}, scope.$$parent);
 
         this.$$source = cell('img', null, {}, this.$$view);
 
