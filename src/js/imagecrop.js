@@ -2,7 +2,8 @@ import Content from './components/Content';
 import Handles from './components/handles/index';
 import Overlay from './components/Overlay';
 
-import {isElement} from './utils/Dom';
+import {hasValue} from './utils/Object';
+import {cell, isElement} from './utils/Dom';
 import {MODES, STATES} from './constants';
 
 let scope = Object.seal({
@@ -74,11 +75,6 @@ function render () {
     scope.meta.dimensions.x2 = scope.meta.dimensions.w = w;
     scope.meta.dimensions.y2 = scope.meta.dimensions.h = h;
 
-    scope.meta.dimensions.x = 50;
-    scope.meta.dimensions.y = 50;
-    scope.meta.dimensions.x2 = 100;
-    scope.meta.dimensions.y2 = 100;
-
     update();
 }
 
@@ -145,6 +141,27 @@ export default class ImageCropper {
         }
     }
 
-    crop () {
+    crop (mime_type = 'image/jpeg', quality = 1) {
+        mime_type = hasValue(['image/jpeg', 'image/png'], mime_type)
+            ? 'image/jpeg'
+            : mime_type;
+
+        quality = (quality < 0 || quality > 1)
+            ? 1
+            : quality;
+
+        const {x, y, x2, y2} = scope.meta.dimensions;
+        const {w : rw, h : rh} = scope.meta.ratio;
+        const w = x2 - x;   //  width
+        const h = y2 - y;   //  height
+
+        const canvas = cell('canvas', null, {
+            width : w,
+            height : h
+        });
+
+        canvas.getContext('2d').drawImage(document.querySelector('img'), rw * x, rh * y, rw * w, rh * h, 0, 0, w, h);
+
+        return canvas.toDataURL(mime_type, quality);
     }
 }
