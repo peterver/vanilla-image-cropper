@@ -20,8 +20,8 @@ describe("ImageCropper Basics", function () {
 
     //  BASICS
 
-    it("should have a function named create", function () {
-        expect(imgc.create).toBeDefined();
+    it("should have a function named setImage", function () {
+        expect(imgc.setImage).toBeDefined();
     });
 
     it("should have a function named crop", function () {
@@ -46,9 +46,6 @@ describe("ImageCropper - Children", function () {
             el = document.createElement('div');
             el.className = 'test-imagecrop';
             document.body.appendChild(el);
-
-            imgc = new ImageCropper('.test-imagecrop', 'base/tests/assets/img.jpg');
-            imgc.create();
         }
     );
 
@@ -59,28 +56,40 @@ describe("ImageCropper - Children", function () {
     );
 
     it("should contain img", function () {
-        var img_el = document.querySelector('.imgc img');
-        expect(img_el).not.toBeUndefined();
-        expect(img_el.tagName.toLowerCase()).toBe('img');
+        imgc = new ImageCropper('.test-imagecrop', 'base/tests/assets/img.jpg', {
+            create_cb : function () {
+                var img_el = document.querySelector('.imgc img');
+                expect(img_el).not.toBeUndefined();
+                expect(img_el.tagName.toLowerCase()).toBe('img');
 
-        expect(
-            img_el.src.split('/').pop()
-        ).toBe('img.jpg');
+                expect(
+                    img_el.src.split('/').pop()
+                ).toBe('img.jpg');
+            }
+        });
     });
 
     it("should contain svg", function () {
-        var img_el = document.querySelector('.imgc svg');
+        imgc = new ImageCropper('.test-imagecrop', 'base/tests/assets/img.jpg', {
+            create_cb : function () {
+                var img_el = document.querySelector('.imgc svg');
 
-        expect(img_el).not.toBeUndefined();
-        expect(img_el.tagName.toLowerCase()).toBe('svg');
+                expect(img_el).not.toBeUndefined();
+                expect(img_el.tagName.toLowerCase()).toBe('svg');
+            }
+        });
     });
 
     it("should contain handles", function () {
-        var img_el = document.querySelector('.imgc div.imgc-handles');
+        imgc = new ImageCropper('.test-imagecrop', 'base/tests/assets/img.jpg', {
+            create_cb : function () {
+                var img_el = document.querySelector('.imgc div.imgc-handles');
 
-        expect(img_el).not.toBeUndefined();
-        expect(img_el.tagName.toLowerCase()).toBe('div');
-        expect(img_el.className).toContain('imgc-handles');
-        expect(img_el.childNodes.length).toBe(8);
+                expect(img_el).not.toBeUndefined();
+                expect(img_el.tagName.toLowerCase()).toBe('div');
+                expect(img_el.className).toContain('imgc-handles');
+                expect(img_el.childNodes.length).toBe(8);
+            }
+        });
     });
 });

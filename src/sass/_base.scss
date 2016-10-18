@@ -10,17 +10,14 @@
     position: relative;
     display: inline-block;
     user-select: none;
+    font-size: 0;
 
     canvas {
         display: none;
     }
 
-    svg,
-    img {
-        @include cover;
-    }
-
     svg {
+        @include cover;
         width: 100%;
         height: 100%;
 
@@ -28,15 +25,6 @@
             fill: rgba(0, 0, 0, .8);
         }
     }
-
-    img {
-        transition: transform .1s ease, transform-origin .2s ease;
-    }
-}
-
-.imgc-content {
-    @include cover;
-    overflow: hidden;
 }
 
 .imgc-handles {
@@ -54,14 +42,14 @@
     outline: 1px dotted rgba(255, 255, 255, .2);
 }
 
-*[class^='imgc-handles-el-'] {
+.imgc-handles-el {
     position: absolute;
     display: inline-block;
     z-index: 1;
     background: transparent;
 }
 
-*[class^='imgc-handles-el-0-'] {
+.imgc-handles-el[class*='imgc-handles-el-0-'] {
     width: 8px;
     height: 8px;
     z-index: 2;

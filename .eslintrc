@@ -6,10 +6,12 @@
     "ecmaVersion": 6,
     "ecmaFeatures": {
       "experimentalObjectRestSpread": true
-    }
+    },
+    "sourceType": "module"
   },
   "globals": {
-    "module" : true
+    "module" : true,
+    "ImageCropper" : true,
   },
   "rules": {
     "eqeqeq": 1,
@@ -23,7 +25,6 @@
     ],
     "no-caller": 2,
     "no-irregular-whitespace": 2,
-    "no-new": 2,
     "valid-typeof": 2,
     "no-shadow": 2,
     "no-undef": 1,
@@ -73,7 +74,6 @@
       }
     ],
     "no-else-return": 2,
-    "sort-imports": 2,
     "newline-after-var": [
       2,
       "always"

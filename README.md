@@ -12,30 +12,6 @@ with zero-dependency injection that builds itself into an object.
 
 # Getting Started
 
-To get started, you need only do a couple things 
-
-### Browserify
-
-Include the imagecrop.min.js file into your js build process
-
-### Plain old javascript without fancy build ?
-
-Include the imagecrop_regular.min.js file as a link
-
-```html
-<script type="text/javascript" src="yourscriptsfolder/imagecrop_regular.min.js"></script>
-```
-
-# Creating an imagecropper instance
-
-If you're using browserify Creating an imagecropper is done like so 
-
-```javascript
-var ImageCropper = require('./imagecrop.min.js');
-img_c = new ImageCropper(selector, image, options);
-```
-
-If you're using plain old javascript without a build process
 ```javascript
 var img_c = new ImageCropper(selector, image, options);
 ```
