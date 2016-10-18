@@ -8,5 +8,5 @@ export function values (obj) {
 export function hasValue (obj, val_to_find) {
     return !!((Array.isArray(obj)
         ? obj
-        : values(obj)).indexOf(val_to_find) !== -1)
+        : values(obj)).indexOf(val_to_find) !== -1);
 }

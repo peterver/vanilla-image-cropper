@@ -74,7 +74,6 @@
       }
     ],
     "no-else-return": 2,
-    "sort-imports": 2,
     "newline-after-var": [
       2,
       "always"

@@ -3,6 +3,7 @@ node_js:
   - "6.6"
 before_script:
   - npm install -g gulp karma-cli
+  - npm install
 script: 
   - npm test
   - gulp build

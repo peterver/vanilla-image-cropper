@@ -10,7 +10,7 @@ let el_content = null;
 let el_overlay = null;
 let el_handles = null;
 
-let scope = Object.seal({
+const scope = Object.seal({
     $$parent : null,
     $$state : STATES.OFFLINE,
     meta : {
@@ -47,7 +47,7 @@ function render () {
 
     //  Calculate width and height based on max-width and max-height
     let {naturalWidth : w, naturalHeight : h} = img;
-    const {max_width : max_w, max_height: max_h} = scope.options;
+    const {max_width : max_w, max_height : max_h} = scope.options;
 
     if (w > max_w) {
         h = ~~(max_w * h / w);

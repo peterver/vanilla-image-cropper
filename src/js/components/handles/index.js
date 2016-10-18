@@ -1,8 +1,8 @@
 import {MODES} from '../../constants';
 import {cell} from '../../utils/Dom';
+import {convertGlobalToLocal} from '../../utils/Event';
 import Handle from './Handle';
 import {hasValue} from '../../utils/Object';
-import {convertGlobalToLocal} from '../../utils/Event';
 
 function move (pos, dim) {
     const w = ~~((dim.x2 - dim.x) * .5);
