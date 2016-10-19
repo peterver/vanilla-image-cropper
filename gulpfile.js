@@ -20,7 +20,7 @@ const autoprefixer = require('gulp-autoprefixer');
 const config = {
     js : {
         src : ['src/js/**/**.js'],
-        dest : 'build/js/',
+        dest : 'dist/js/',
         entry : './src/js/imagecrop.js',
     },
     docs : {
@@ -30,7 +30,7 @@ const config = {
     },
     scss : {
         src : ['src/sass/**/**.scss'],
-        dest : 'build/css/',
+        dest : 'dist/css/',
     },
 }
 
@@ -95,11 +95,11 @@ const config = {
 
     gulp.task('reload', () => sync.reload());
 
-    gulp.task('serve', ['build'], (cb) => {
+    gulp.task('serve', ['dist'], (cb) => {
         sync.init({
-            server : ['./docs', './build'],
+            server : ['./docs', './dist'],
             index : 'index.html',
-            files : ['./build/js/imagecrop.min.js', './build/css/imagecrop.min.css', './docs/index.html', './docs/app.min.js']
+            files : ['./dist/js/imagecrop.min.js', './dist/css/imagecrop.min.css', './docs/index.html', './docs/app.min.js']
         });
 
         gulp.watch(config.scss.src, () => runSequence('scss', 'reload'));
@@ -107,7 +107,7 @@ const config = {
         gulp.watch(config.docs.src, () => runSequence('docs', 'reload'));
     });
 
-    gulp.task('build', (cb) => runSequence('js', 'scss', 'docs', cb));
+    gulp.task('dist', (cb) => runSequence('js', 'scss', 'docs', cb));
 
     //  Wrapper task for building all files, and watching for changes.
     gulp.task('default', () => runSequence('serve'));
