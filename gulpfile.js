@@ -23,10 +23,10 @@ const config = {
         dest : 'build/js/',
         entry : './src/js/imagecrop.js',
     },
-    example : {
-        src : ['src/example/**/**.js'],
-        dest : './example/',
-        entry : './src/example/app.js'
+    docs : {
+        src : ['src/docs/**/**.js'],
+        dest : './docs/',
+        entry : './src/docs/app.js'
     },
     scss : {
         src : ['src/sass/**/**.scss'],
@@ -73,7 +73,7 @@ const config = {
     }
 
     gulp.task('js', () => doRollup(config.js));
-    gulp.task('example', () => doRollup(config.example));
+    gulp.task('docs', () => doRollup(config.docs));
 
 //
 //  SCSS
@@ -97,17 +97,17 @@ const config = {
 
     gulp.task('serve', ['build'], (cb) => {
         sync.init({
-            server : ['./example', './build'],
+            server : ['./docs', './build'],
             index : 'index.html',
-            files : ['./build/js/imagecrop.min.js', './build/css/imagecrop.min.css', './example/index.html', './example/app.min.js']
+            files : ['./build/js/imagecrop.min.js', './build/css/imagecrop.min.css', './docs/index.html', './docs/app.min.js']
         });
 
         gulp.watch(config.scss.src, () => runSequence('scss', 'reload'));
         gulp.watch(config.js.src, () => runSequence('js', 'reload'));
-        gulp.watch(config.example.src, () => runSequence('example', 'reload'));
+        gulp.watch(config.docs.src, () => runSequence('docs', 'reload'));
     });
 
-    gulp.task('build', (cb) => runSequence('js', 'scss', 'example', cb));
+    gulp.task('build', (cb) => runSequence('js', 'scss', 'docs', cb));
 
     //  Wrapper task for building all files, and watching for changes.
     gulp.task('default', () => runSequence('serve'));
