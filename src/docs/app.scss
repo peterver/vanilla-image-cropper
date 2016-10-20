@@ -1,0 +1,195 @@
+$font-header : 'Josefin Slab', serif;
+$font-body : 'Droid Sans', sans-serif;
+
+$background : #4f5e87;
+$pad : 40px;
+
+body {
+    background-color: $background;
+    text-align: center;
+}
+
+//
+//  OVERRIDES
+//
+
+    //  Image Cropper
+
+    .imgc-handles {
+        border-color: rgba(#fff, .7);
+    }
+
+    .imgc-handles-el[class*='imgc-handles-el-0-'] {
+        border-radius: 8px;
+        width: 12px;
+        height: 12px;
+        border-color: #fff;
+        background: #fff;
+    }
+
+    .imgc-handles-el-0-0 {
+        top: -8px;
+        left: -8px;
+    }
+
+    .imgc-handles-el-0-1 {
+        top: -8px;
+        right: -8px;
+    }
+
+    .imgc-handles-el-0-2 {
+        right: -8px;
+        bottom: -8px;
+    }
+
+    .imgc-handles-el-0-3 {
+        left: -8px;
+        bottom: -8px;
+    }
+
+    .imgc-content,
+    .imgc-overlay {
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    //  Highlightjs
+
+    .hljs {
+        padding: .5em .75em;
+        background: #fff;
+        width: 100%;
+        margin: 0 auto;
+        border-radius: 10px;
+        text-align: left;
+        font-family: $font-body;
+        line-height: 1.4em;
+
+        .hljs-string {
+            color: #ad3735;
+        }
+    }
+
+    .hljs,
+    .hljs-subst {
+        color: #7b7b7b;
+    }
+
+//
+//  COMPONENTS
+//
+
+    .docs-button {
+        padding: 10px 20px;
+        border-radius: 2px;
+        background-color: transparent;
+        border: none;
+        color: #fff;
+        font-size: 10pt;
+        letter-spacing: 1pt;
+        font-weight: 100;
+        min-width: 100px;
+
+        &:focus {
+            outline: none;
+        }
+    }
+
+    @mixin themed-button($name, $background-color) {
+        .#{$name} {
+            background-color: $background-color;
+            transition: background-color .3s ease;
+
+            &:hover {
+                background-color: darken($background-color, 6%);
+            }
+
+            &:active {
+                box-shadow: 0px 2px 0 0 rgba(darken($background-color, 10%), .4);
+            }
+        }
+    }
+
+//
+//  CONTENT
+//
+
+    .docs-header {
+        padding: $pad;
+        margin-top: 100px;
+
+        &:after {
+            content: '';
+            background-color: #fff;
+            height: 1px;
+            width: 100px;
+            display: inline-block;
+            margin-top: 20px;
+        }
+
+        .docs-header-lbl {
+            font-family: $font-header;
+            color: #fff;
+            font-size: 40pt;
+            font-weight: 100;
+
+            .docs-header-lbl-highlight {
+                color: #76ddff;
+            }
+        }
+
+        .docs-header-info {
+            font-size: .85em;
+            font-family: $font-body;
+            color: #fff;
+            font-weight: 100;
+            letter-spacing: .3pt;
+            width: 500px;
+            display: block;
+            line-height: 1.6em;
+            margin: 30px auto 0 auto;
+        }
+    }
+
+    .docs-content {
+        padding: $pad*1.5;
+
+        .docs-content-view-hero,
+        .docs-content-view-code {
+            display: inline-block;
+        }
+
+        .docs-content-view-code {
+            width: 400px;
+            display: block;
+            margin: 50px auto 0 auto;
+        }
+
+        .docs-content-view-hero {
+            box-shadow: 0px 5px 5px 0 #4d5773;
+        }
+
+        .docs-content-actions {
+            padding-top: $pad;
+
+            @include themed-button('crop-button', #7fc7cc);
+            @include themed-button('destroy-button', #fd8b8b);
+            @include themed-button('change-button', #8da7ef);
+        }
+    }
+
+    .docs-footer {
+        padding: $pad;
+        margin-bottom: 100px;
+
+        .docs-disclaimer {
+            font-family: $font-body;
+            color: lighten($background, 20%);
+            font-size: 10pt;
+
+            .docs-disclaimer-author {
+                color: lighten($background, 30%);
+                text-decoration: none;
+            }
+        }
+    }

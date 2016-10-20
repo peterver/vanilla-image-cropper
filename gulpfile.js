@@ -24,9 +24,15 @@ const config = {
         entry : './src/js/imagecrop.js',
     },
     docs : {
-        src : ['src/docs/**/**.js'],
-        dest : './docs/',
-        entry : './src/docs/app.js'
+        js : {
+            src : ['src/docs/**/**.js'],
+            dest : './docs/',
+            entry : './src/docs/app.js'
+        },
+        scss : {
+            src : ['src/docs/**/**.scss'],
+            dest : './docs/',
+        }
     },
     scss : {
         src : ['src/sass/**/**.scss'],
@@ -35,7 +41,7 @@ const config = {
 }
 
 //
-//  JS
+//  UTILITIES
 //
 
     function doRollup (component) {
@@ -72,26 +78,35 @@ const config = {
         .pipe(gulp.dest(component.dest));
     }
 
-    gulp.task('js', () => doRollup(config.js));
-    gulp.task('docs', () => doRollup(config.docs));
+    function doSCSS (component) {
+        return gulp.src(component.src)
+            .pipe(scssLint({
+                config : '.scss-lint.yml'
+            }))
+            .pipe(sass({
+                outputStyle : 'compressed'
+            }))
+            .pipe(autoprefixer())
+            .pipe(rename({
+                suffix : '.min'
+            }))
+            .pipe(gulp.dest(component.dest));
+    }
 
 //
-//  SCSS
+//  SOURCE TASKS
 //
 
-    gulp.task('scss', () => gulp.src(config.scss.src)
-        .pipe(scssLint({
-            config : '.scss-lint.yml'
-        }))
-        .pipe(sass({
-            outputStyle : 'compressed'
-        }))
-        .pipe(autoprefixer())
-        .pipe(rename({
-            suffix : '.min'
-        }))
-        .pipe(gulp.dest(config.scss.dest))
-    );
+    gulp.task('js', () => doRollup(config.js).pipe(gulp.dest('docs/dist')));
+    gulp.task('scss', () => doSCSS(config.scss).pipe(gulp.dest('docs/dist')));
+
+    gulp.task('docs:js', () => doRollup(config.docs.js));
+    gulp.task('docs:scss', () => doSCSS(config.docs.scss));
+    gulp.task('docs', () => runSequence('docs:js', 'docs:scss'));
+
+//
+//  BUILD TASKS
+//
 
     gulp.task('reload', () => sync.reload());
 
@@ -104,7 +119,8 @@ const config = {
 
         gulp.watch(config.scss.src, () => runSequence('scss', 'reload'));
         gulp.watch(config.js.src, () => runSequence('js', 'reload'));
-        gulp.watch(config.docs.src, () => runSequence('docs', 'reload'));
+        gulp.watch(config.docs.js.src, () => runSequence('docs:js', 'reload'));
+        gulp.watch(config.docs.scss.src, () => runSequence('docs:scss', 'reload'));
     });
 
     gulp.task('dist', (cb) => runSequence('js', 'scss', 'docs', cb));
