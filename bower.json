@@ -2,12 +2,12 @@
   "name": "peterver-img-crop",
   "version": "1.2.0",
   "authors": [
-    "Peter Vermeulen <contact@peterver.be>"
+    "Peter Vermeulen <nmb.peterv@gmail.com>"
   ],
   "description": "Lightweight image cropper, with zero dependency requirements",
   "main": [
-    "build/js/imagecrop.min.js",
-    "build/css/imagecrop.min.css"
+    "dist/js/imagecrop.min.js",
+    "dist/css/imagecrop.min.css"
   ],
   "keywords": [
     "imagecropper",
@@ -18,14 +18,11 @@
   "ignore": [
     "src/",
     "tests/"
+    "gulpfile.js",
+    "node_modules",
+    "**/.*",
+    "package.json"
   ],
   "license": "MIT",
   "homepage": "https://github.com/peterver/image-crop",
-  "ignore": [
-    "node_modules",
-    "example",
-    "gulpfile.js",
-    "**/.*",
-    "package.json"
-  ]
 }

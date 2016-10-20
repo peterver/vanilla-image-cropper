@@ -8,7 +8,7 @@
     "email": "nmb.peterv@gmail.com",
     "url": "https://github.com/peterver"
   },
-  "license": "ISC",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git://github.com/peterver/image-crop.git"
@@ -28,7 +28,7 @@
   ],
   "files": [
     "dist/",
-    "example/"
+    "docs/"
   ],
   "scripts": {
     "test": "karma start karma.conf.js"
