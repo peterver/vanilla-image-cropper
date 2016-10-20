@@ -65,9 +65,10 @@ body {
         font-family: $font-body;
         line-height: 1.4em;
         letter-spacing: .01em;
+        color: #dadada;
 
         .hljs-string {
-            color: #ada971;
+            color: #deb86d;
         }
 
         .hljs-keyword, .hljs-selector-tag, .hljs-name, .hljs-selector-id, .hljs-selector-class {
