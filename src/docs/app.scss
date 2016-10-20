@@ -1,7 +1,7 @@
 $font-header : 'Josefin Slab', serif;
 $font-body : 'Droid Sans', sans-serif;
 
-$background : #4f5e87;
+$background : #484c84;
 $pad : 40px;
 
 body {
@@ -57,22 +57,22 @@ body {
 
     .hljs {
         padding: .5em .75em;
-        background: #fff;
+        background: #0d0e19;
         width: 100%;
         margin: 0 auto;
         border-radius: 10px;
         text-align: left;
         font-family: $font-body;
         line-height: 1.4em;
+        letter-spacing: .01em;
 
         .hljs-string {
-            color: #ad3735;
+            color: #ada971;
         }
-    }
 
-    .hljs,
-    .hljs-subst {
-        color: #7b7b7b;
+        .hljs-keyword, .hljs-selector-tag, .hljs-name, .hljs-selector-id, .hljs-selector-class {
+            color: #a78cdc;
+        }
     }
 
 //
@@ -163,10 +163,8 @@ body {
             width: 400px;
             display: block;
             margin: 50px auto 0 auto;
-        }
-
-        .docs-content-view-hero {
-            box-shadow: 0px 5px 5px 0 #4d5773;
+            font-size: 11pt;
+            font-weight: 100;
         }
 
         .docs-content-actions {
