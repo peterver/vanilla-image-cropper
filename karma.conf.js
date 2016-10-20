@@ -16,8 +16,8 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
         {pattern: "tests/**/*.jpg", watched: false, served: true, included: false},
-        {pattern: 'build/js/imagecrop.min.js', included: true},
-        {pattern: 'build/css/imagecrop.min.css', included: true},
+        {pattern: 'dist/js/imagecrop.min.js', included: true},
+        {pattern: 'dist/css/imagecrop.min.css', included: true},
         {pattern: 'tests/**/*.test.js', included: true},
     ],
 
