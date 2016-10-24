@@ -2,7 +2,7 @@ import {MODES} from '../../constants';
 import {cell} from '../../utils/Dom';
 import {convertGlobalToLocal} from '../../utils/Event';
 import Handle from './Handle';
-import {hasValue} from '../../utils/Object';
+import {hasValue, copyTo} from '../../utils/Object';
 
 function move (pos, dim) {
     const w = ~~((dim.x2 - dim.x) * .5);
@@ -14,10 +14,12 @@ function move (pos, dim) {
     if (pos.y - h < 0) pos.y = h;
     if (pos.y + h > dim.h) pos.y = dim.h - h;
 
-    dim.x = pos.x - w;
-    dim.x2 = pos.x + w;
-    dim.y = pos.y - h;
-    dim.y2 = pos.y + h;
+    copyTo(dim, {
+        x : pos.x - w,
+        x2 : pos.x + w,
+        y : pos.y - h,
+        y2 : pos.y + h,
+    });
 }
 
 export default class Handles {
@@ -55,9 +57,11 @@ export default class Handles {
     }
 
     update ({x, x2, y, y2, w, h}) {
-        this.$$view.style.top = `${y}px`;
-        this.$$view.style.left = `${x}px`;
-        this.$$view.style.right = `${~~(w - x2)}px`;
-        this.$$view.style.bottom = `${~~(h - y2)}px`;
+        copyTo(this.$$view.style, {
+            top : `${y}px`,
+            left : `${x}px`,
+            right : `${~~(w - x2)}px`,
+            bottom : `${~~(h - y2)}px`,
+        });
     }
 }

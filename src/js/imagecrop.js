@@ -2,7 +2,7 @@ import Content from './components/Content';
 import Handles from './components/handles/index';
 import Overlay from './components/Overlay';
 
-import {hasValue} from './utils/Object';
+import {hasValue, copyTo} from './utils/Object';
 import {cell, isElement} from './utils/Dom';
 import {MODES, STATES} from './constants';
 
@@ -42,8 +42,8 @@ function __scope (id, opts) {
         },
     });
 
-    //  Parse options
-    Object.keys(opts || {}).forEach((key) => scope.options[key] = opts[key]);
+    //  Parse options into the scope
+    copyTo(scope.options, opts);
 
     scopes[id] = scope;
 
@@ -90,17 +90,18 @@ function __render () {
             ? mcw
             : mch) * .5;
 
-        const x_center = w * .5;
-        const y_center = h * .5;
-
-        scope.meta.dimensions.x = x_center - rad;
-        scope.meta.dimensions.x2 = x_center + rad;
-        scope.meta.dimensions.y = y_center - rad;
-        scope.meta.dimensions.y2 = y_center + rad;
+        copyTo(scope.meta.dimensions, {
+            x : (w * .5) - rad,
+            x2 : (w * .5) + rad,
+            y : (h * .5) - rad,
+            y2 : (h * .5) + rad,
+        });
 
     } else {
-        scope.meta.dimensions.x2 = scope.meta.dimensions.w = w;
-        scope.meta.dimensions.y2 = scope.meta.dimensions.h = h;
+        copyTo(scope.meta.dimensions, {
+            x2 : w,
+            y2 : h,
+        });
     }
 
     __update.call(this);
@@ -133,6 +134,8 @@ export default class ImageCropper {
     constructor (selector, href, opts = {}) {
         if (!href || !selector) return;
 
+        this.$$id = Math.random().toString(36).substring(10);
+
         const scope = __scope(this.$$id, opts);
 
         //  Set parent
@@ -140,10 +143,9 @@ export default class ImageCropper {
 
         if (!isElement(el)) throw new TypeError('Does the parent exist?');
 
+        //  Setup parent
         scope.$$parent = el;
         scope.$$parent.classList.add('imgc');
-
-        //  Create a Content instance
         scope.$$parent.addEventListener('DOMNodeRemovedFromDocument', this.destroy);
         scope.$$parent.addEventListener('source:fetched', __render.bind(this), true);
         scope.$$parent.addEventListener('source:dimensions', __update.bind(this), true);
