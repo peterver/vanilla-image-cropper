@@ -134,7 +134,7 @@ export default class ImageCropper {
     constructor (selector, href, opts = {}) {
         if (!href || !selector) return;
 
-        this.$$id = Math.random().toString(36).substring(10);
+        this.$$id = Math.random().toString(36).substring(2);
 
         const scope = __scope(this.$$id, opts);
 
@@ -146,7 +146,7 @@ export default class ImageCropper {
         //  Setup parent
         scope.$$parent = el;
         scope.$$parent.classList.add('imgc');
-        scope.$$parent.addEventListener('DOMNodeRemovedFromDocument', this.destroy);
+        scope.$$parent.addEventListener('DOMNodeRemovedFromDocument', this.destroy.bind(this));
         scope.$$parent.addEventListener('source:fetched', __render.bind(this), true);
         scope.$$parent.addEventListener('source:dimensions', __update.bind(this), true);
 
