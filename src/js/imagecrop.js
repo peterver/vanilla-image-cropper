@@ -6,44 +6,56 @@ import {hasValue} from './utils/Object';
 import {cell, isElement} from './utils/Dom';
 import {MODES, STATES} from './constants';
 
-let el_content = null;
-let el_overlay = null;
-let el_handles = null;
+const scopes = {};
 
-const scope = Object.seal({
-    $$parent : null,
-    $$state : STATES.OFFLINE,
-    meta : {
-        dimensions : {
-            x : 0,
-            x2 : 0,
-            y : 0,
-            y2 : 0,
-            w : 0,
-            h : 0,
+function __scope (id, opts) {
+    const scope = Object.seal({
+        $$parent : null,
+        $$state : STATES.OFFLINE,
+        el_content : null,
+        el_handles : null,
+        el_overlay : null,
+        meta : {
+            dimensions : {
+                x : 0,
+                x2 : 0,
+                y : 0,
+                y2 : 0,
+                w : 0,
+                h : 0,
+            },
+            ratio : {
+                w : 1,
+                h : 1,
+            },
         },
-        ratio : {
-            w : 1,
-            h : 1,
+        options : {
+            update_cb : () => {},
+            create_cb : () => {},
+            destroy_cb : () => {},
+            min_crop_width : 100,
+            min_crop_height : 100,
+            max_width : 500,
+            max_height : 500,
+            fixed_size : false,
+            mode : MODES.SQUARE,
         },
-    },
-    options : {
-        update_cb : () => {},
-        create_cb : () => {},
-        destroy_cb : () => {},
-        min_crop_width : 100,
-        min_crop_height : 100,
-        max_width : 500,
-        max_height : 500,
-        fixed_size : false,
-        mode : MODES.SQUARE,
-    },
-});
+    });
 
-function render () {
+    //  Parse options
+    Object.keys(opts || {}).forEach((key) => scope.options[key] = opts[key]);
+
+    scopes[id] = scope;
+
+    return scope;
+}
+
+function __render () {
+    const scope = scopes[this.$$id];
+
     if (scope.$$state !== STATES.LOADING) return;
 
-    const img = el_content.$$source;
+    const img = scope.el_content.$$source;
 
     //  Calculate width and height based on max-width and max-height
     let {naturalWidth : w, naturalHeight : h} = img;
@@ -91,12 +103,14 @@ function render () {
         scope.meta.dimensions.y2 = scope.meta.dimensions.h = h;
     }
 
-    update();
+    __update.call(this);
 
     scope.options.create_cb({w, h});
 }
 
-function update (evt) {
+function __update (evt) {
+    const scope = scopes[this.$$id];
+
     if (scope.$$state !== STATES.READY) return;
     if (evt) evt.stopPropagation();
 
@@ -109,8 +123,8 @@ function update (evt) {
     if (dim.y2 > dim.h) dim.y2 = dim.h;
 
     //  Patch updates
-    el_overlay.update(dim, scope.options);
-    el_handles.update(dim, scope.options);
+    scope.el_overlay.update(dim, scope.options);
+    scope.el_handles.update(dim, scope.options);
 
     scope.options.update_cb(dim);
 }
@@ -119,8 +133,7 @@ export default class ImageCropper {
     constructor (selector, href, opts = {}) {
         if (!href || !selector) return;
 
-        //  Parse options
-        Object.keys(opts || {}).forEach((key) => scope.options[key] = opts[key]);
+        const scope = __scope(this.$$id, opts);
 
         //  Set parent
         const el = document.querySelector(selector);
@@ -132,23 +145,27 @@ export default class ImageCropper {
 
         //  Create a Content instance
         scope.$$parent.addEventListener('DOMNodeRemovedFromDocument', this.destroy);
-        scope.$$parent.addEventListener('source:fetched', render, true);
-        scope.$$parent.addEventListener('source:dimensions', update, true);
+        scope.$$parent.addEventListener('source:fetched', __render.bind(this), true);
+        scope.$$parent.addEventListener('source:dimensions', __update.bind(this), true);
 
         //  Create Wrapper elements
-        el_content = new Content(scope);
-        el_overlay = new Overlay(scope);
-        el_handles = new Handles(scope);
+        scope.el_content = new Content(scope);
+        scope.el_overlay = new Overlay(scope);
+        scope.el_handles = new Handles(scope);
 
         this.setImage(href);
     }
 
     setImage (href) {
+        const scope = scopes[this.$$id];
+
         scope.$$state = STATES.LOADING;
-        el_content.source(href);
+        scope.el_content.source(href);
     }
 
     destroy () {
+        const scope = scopes[this.$$id];
+
         scope.$$state = STATES.OFFLINE;
 
         if (isElement(scope.$$parent)) {
@@ -161,9 +178,12 @@ export default class ImageCropper {
         }
 
         scope.options.destroy_cb();
+        delete scopes[this.$$id];
     }
 
     crop (mime_type = 'image/jpeg', quality = 1) {
+        const scope = scopes[this.$$id];
+
         mime_type = hasValue(['image/jpeg', 'image/png'], mime_type)
             ? 'image/jpeg'
             : mime_type;
@@ -182,7 +202,7 @@ export default class ImageCropper {
             height : h
         });
 
-        canvas.getContext('2d').drawImage(el_content.$$source, rw * x, rh * y, rw * w, rh * h, 0, 0, w, h);
+        canvas.getContext('2d').drawImage(scope.el_content.$$source, rw * x, rh * y, rw * w, rh * h, 0, 0, w, h);
 
         return canvas.toDataURL(mime_type, quality);
     }
