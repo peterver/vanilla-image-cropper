@@ -5,7 +5,6 @@
 [![npm](https://img.shields.io/npm/dt/vanilla-image-cropper.svg?maxAge=2592000)]()
 [![npm](https://img.shields.io/npm/l/vanilla-image-cropper.svg?maxAge=2592000)]()
 <a target="_blank" href="https://www.paypal.me/peterver"><img src="https://img.shields.io/badge/PayPal-Donate-blue.svg?style=flat" title="Buy me a beer" alt="Buy me a beer"/></a>
-[![David](https://img.shields.io/david/peterver/vanilla-image-cropper.svg?maxAge=2592000)]()
 
 A lightweight javascript imagecropper written in vanilla js
 with zero-dependency injection that builds itself into an object.
