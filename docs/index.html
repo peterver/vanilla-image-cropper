@@ -10,7 +10,7 @@
 		<meta name="description" content="">
 	    <meta name="viewport" content="width=device-width, initial-scale=1">
 	    <!-- STYLES -->
-	    <link href="https://fonts.googleapis.com/css?family=Droid+Sans:100:400:600|Josefin+Slab:100" rel="stylesheet">
+	    <link href="https://fonts.googleapis.com/css?family=Droid+Sans:100:400:600|Crimson+Text" rel="stylesheet">
 	    <link href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/styles/arta.min.css" rel="stylesheet" />
 	    <link rel="stylesheet" href="reset.css">
 	    <link rel="stylesheet" href="dist/imagecrop.min.css">
@@ -21,30 +21,122 @@
 			<h1 class="docs-header-lbl">
 				peterver/<span class="docs-header-lbl-highlight">vanilla-image-cropper</span>
 			</h1>
-			<p class="docs-header-info">A lightweight imagecropper with no dependencies.</p>
+			<p class="docs-header-info">A lightweight configurable imagecropper with no dependencies written in javascript, capable of cropping an image locally.</p>
 		</header>
 		<main class="docs-content">
-			<article>
-				<div class="docs-content-view-hero / example-1"></div>
-				<div class="docs-content-view-hero / example-2"></div>
-				<div>
-					<div class="example-size-100"></div>
-					<div class="example-size-200"></div>
-					<div class="example-size-300"></div>
-				</div>
-				<div>
-					<div class="example-live-preview"></div>
-					<img src="" alt="" width=100 height=100 class="example-live-preview-target">
-				</div>
-				<pre class="docs-content-view-code"><code class="js">const img_c = new ImageCropper(
-	'.test-imagecrop',
-	"http://thecatapi.com/api/images/get?size=med"
-);</code></pre>
+			<article class="docs-content-el / install">
+				<header class="docs-content-el-header">
+					<h1 class="docs-content-el-header-lbl">Installation</h1>
+				</header>
+				<section class="install-section">
+					<header class="install-section-header">
+						<h2>npm</h2>
+					</header>
+					<pre class="docs-content-code / install-section-code"><code class="js">npm install vanilla-image-cropper
+</code></pre>
+				</section>
+				<section class="install-section">
+					<header class="install-section-header">
+						<h2>bower</h2>
+					</header>
+					<pre class="docs-content-code / install-section-code"><code class="js">bower install vanilla-image-cropper
+</code></pre>
+				</section>
+			</article>
+			<article class="docs-content-el / examples">
+				<header class="docs-content-el-header">
+					<h1 class="docs-content-el-header-lbl">Examples</h1>
+				</header>
+				<section class="docs-content-el-example">
+					<div class="docs-content-el-example-description">
+						<p>A vanilla image cropper instance will <strong>maintain the original aspect ratio</strong> of the provided image and adjust its own dimensions accordingly.
+
+						This allows for the prevention of 'black bands' and provides a clean and slick interface.</p>
+						<pre class="docs-content-code"><code class="js">new ImageCropper('.example-1', "./example1.jpg", {
+    ...
+});
+</code></pre>	
+					</div>
+					<div class="docs-content-el-example-preview">
+						<div>
+							<div class="example-1"></div>
+						</div>
+						<div>
+							<div class="example-2"></div>
+						</div>
+					</div>
+				</section>
+				<section class="docs-content-el-example">
+					<div class="docs-content-el-example-description">
+						<p>Based on the options that you provide the vanilla image cropper will <strong>adjust itself</strong>, this way you can show the same image in a <strong>variety of dimensions</strong>.</p>
+<pre class="docs-content-code"><code class="js">new ImageCropper('.example-size-100', "./example1.jpg", {
+	...
+	max_width : 100,
+	max_height : 100,
+	...
+});</code></pre>
+					</div>
+					<div class="docs-content-el-example-preview">
+						<div>
+							<div class="example-size-100"></div>
+						</div>
+						<div>
+							<div class="example-size-200"></div>
+						</div>
+						<div>
+							<div class="example-size-300"></div>
+						</div>
+					</div>
+				</section>
+				<section class="docs-content-el-example">
+					<div class="docs-content-el-example-description">
+						<p>
+							Modes are a way of setting the way the preview area is built and rendered, currently <strong>two modes are possible</strong> :
+							<ul class="list">
+								<li class="list-el">
+									<span class="list-el-title">square</span>
+									<span class="list-el-description">A square preview</span>
+								</li>
+								<li class="list-el">
+									<span class="list-el-title">circular</span>
+									<span class="list-el-description">The preview area will be rendered in a circular form</span>
+								</li>
+							</ul>
+						</p>
+<pre class="docs-content-code"><code class="js">new ImageCropper('.example-mode-circular', "./example1.jpg", {
+	...
+	mode : 'circular'
+	...
+});</code></pre>
+					</div>
+					<div class="docs-content-el-example-preview">
+						<div>
+							<div class="example-mode-circular"></div>
+						</div>
+					</div>
+				</section>
+				<section class="docs-content-el-example">
+					<div class="docs-content-el-example-description">
+						<p>
+							By passing the <strong>fixed_size property</strong>, the aspect ratio of the crop area will remain the same when resizing the preview area of te cropper
+						</p>
+<pre class="docs-content-code"><code class="js">new ImageCropper('.example-fixed-off', "./example1.jpg", {
+	...
+	fixed_size : true
+	...
+});</code></pre>
+					</div>
+					<div class="docs-content-el-example-preview">
+						<div>
+							<div class="example-fixed-on"></div>
+						</div>
+					</div>
+				</section>
 			</article>
 		</main>
 		<footer class="docs-footer">
 			<aside>
-				<a href="https://github.com/peterver/image-crop" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: fixed; top: 0; border: 0; left: 0; transform: scale(-1, 1);" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style></a>
+				<a href="https://github.com/peterver/image-crop" class="github-corner" aria-label="View source on Github"><svg width="60" height="60" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: fixed; top: 0; border: 0; left: 0; transform: scale(-1, 1);" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style></a>
 			</aside>
 			<small class="docs-disclaimer">&copy; Copyright 2016, <a href="http://www.peterver.be" class="docs-disclaimer-author">Peter Vermeulen</a>, Released under the MIT License</small>
 		</footer>
