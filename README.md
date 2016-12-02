@@ -10,6 +10,8 @@
 A lightweight javascript imagecropper written in vanilla js
 with zero-dependency injection that builds itself into an object.
 
+For a live preview and some example code, visit [http://peterver.github.io/vanilla-image-cropper/](http://peterver.github.io/vanilla-image-cropper/)
+
 # Getting Started
 
 ```javascript
