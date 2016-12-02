@@ -17,12 +17,12 @@
   ],
   "ignore": [
     "src/",
-    "tests/"
+    "tests/",
     "gulpfile.js",
     "node_modules",
     "**/.*",
     "package.json"
   ],
   "license": "MIT",
-  "homepage": "https://github.com/peterver/vanilla-image-cropper",
+  "homepage": "https://github.com/peterver/vanilla-image-cropper"
 }
