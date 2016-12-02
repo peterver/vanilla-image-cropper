@@ -9,9 +9,10 @@ import {MODES, STATES} from './constants';
 const scopes = {};
 
 function __scope (id, opts) {
-    const scope = Object.seal({
+    let _state = STATES.OFFLINE;
+
+    const scope = Object.seal(Object.defineProperties({
         $$parent : null,
-        $$state : STATES.OFFLINE,
         el_content : null,
         el_handles : null,
         el_overlay : null,
@@ -40,12 +41,20 @@ function __scope (id, opts) {
             fixed_size : false,
             mode : MODES.SQUARE,
         },
-    });
+    }, {
+        state : {
+            get : () => _state,
+            set : (state) => {
+                _state = state;
+                if (scope.$$parent) scope.$$parent.setAttribute('data-imgc-state', state);
+            }
+        }
+    }));
 
     //  Parse options into the scope
     copyTo(scope.options, opts);
 
-    scopes[id] = scope;
+    scopes[id] = Object.seal(scope);
 
     return scope;
 }
@@ -53,7 +62,7 @@ function __scope (id, opts) {
 function __render () {
     const scope = scopes[this.$$id];
 
-    if (scope.$$state !== STATES.LOADING) return;
+    if (scope.state !== STATES.LOADING) return;
 
     const img = scope.el_content.$$source;
 
@@ -81,7 +90,7 @@ function __render () {
     scope.meta.dimensions.w = img.width = w;
     scope.meta.dimensions.h = img.height = h;
 
-    scope.$$state = STATES.READY;
+    scope.state = STATES.READY;
 
     //  Initialize dimensions
     if (scope.options.fixed_size) {
@@ -112,7 +121,7 @@ function __render () {
 function __update (evt) {
     const scope = scopes[this.$$id];
 
-    if (scope.$$state !== STATES.READY) return;
+    if (scope.state !== STATES.READY) return;
     if (evt) evt.stopPropagation();
 
     const {dimensions : dim} = scope.meta;
@@ -161,14 +170,14 @@ export default class ImageCropper {
     setImage (href) {
         const scope = scopes[this.$$id];
 
-        scope.$$state = STATES.LOADING;
+        scope.state = STATES.LOADING;
         scope.el_content.source(href);
     }
 
     destroy () {
         const scope = scopes[this.$$id];
 
-        scope.$$state = STATES.OFFLINE;
+        scope.state = STATES.OFFLINE;
 
         if (isElement(scope.$$parent)) {
             while (scope.$$parent.firstChild) {
