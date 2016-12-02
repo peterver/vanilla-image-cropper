@@ -1,6 +1,6 @@
 # Lightweight Javascript ImageCropper
 
-[![Build Status](https://travis-ci.org/peterver/image-crop.svg?branch=master)](https://travis-ci.org/peterver/image-crop)
+[![Build Status](https://travis-ci.org/peterver/vanilla-image-cropper.svg?branch=master)](https://travis-ci.org/peterver/vanilla-image-cropper)
 [![npm](https://img.shields.io/npm/v/image_cropper.svg)](https://www.npmjs.com/package/image_cropper)
 [![npm](https://img.shields.io/npm/dt/image_cropper.svg?maxAge=2592000)]()
 [![npm](https://img.shields.io/npm/l/image_cropper.svg?maxAge=2592000)]()
