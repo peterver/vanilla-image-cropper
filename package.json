@@ -1,6 +1,6 @@
 {
   "name": "vanilla-image-cropper",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "description": "A lightweight javascript imagecropper",
   "main": "imagecrop.js",
   "author": {
