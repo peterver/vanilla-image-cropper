@@ -1,6 +1,6 @@
 {
   "name": "peterver-img-crop",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "authors": [
     "Peter Vermeulen <nmb.peterv@gmail.com>"
   ],
@@ -24,5 +24,5 @@
     "package.json"
   ],
   "license": "MIT",
-  "homepage": "https://github.com/peterver/image-crop",
+  "homepage": "https://github.com/peterver/vanilla-image-cropper",
 }
