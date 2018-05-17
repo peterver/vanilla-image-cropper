@@ -148,7 +148,7 @@ export default class ImageCropper {
         const scope = __scope(this.$$id, opts);
 
         //  Set parent
-        const el = document.querySelector(selector);
+        const el = selector instanceof HTMLElement ? selector : document.querySelector(selector);
 
         if (!isElement(el)) throw new TypeError('Does the parent exist?');
 
