@@ -14,11 +14,11 @@ For a live preview and some example code, visit [http://peterver.github.io/vanil
 # Getting Started
 
 ```javascript
-var img_c = new ImageCropper(selector, image, options);
+var img_c = new ImageCropper(parent, image, options);
 ```
 
-### selector
-The selector is an html5 css selector ( such as '#myTestDiv' ), basically anything that works with a querySelector does the job.
+### parent
+The parent can be one of two things. It's either an HTML5 css **selector** (such as '#myTestDiv' or '.myclass .mysubclass'), or a **dom node**.
 
 It should point to the element where you want the imagecropper to be located.
 
@@ -96,4 +96,8 @@ and the imagecropper instance will destroy itself :]
 For an example, check out the example folder in the repository
 
 # Author
-Peter Vermeulen
+
+- [Peter Vermeulen](https://github.com/peterver)
+
+# Contributors
+- [marcelopc](https://github.com/marcelopc)
