@@ -51,7 +51,7 @@ function __scope (id, opts) {
         }
     }));
 
-    //  Parse options into the scope
+    //  Configure scope
     copyTo(scope.options, opts);
 
     scopes[id] = Object.seal(scope);
@@ -205,8 +205,8 @@ export default class ImageCropper {
 
         const {x, y, x2, y2} = scope.meta.dimensions;
         const {w : rw, h : rh} = scope.meta.ratio;
-        const w = x2 - x;   //  width
-        const h = y2 - y;   //  height
+        const w = x2 - x; //  width
+        const h = y2 - y; //  height
 
         const canvas = cell('canvas', null, {
             width : w,
