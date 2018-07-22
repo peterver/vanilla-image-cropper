@@ -18,7 +18,7 @@ var img_c = new ImageCropper(parent, image, options);
 ```
 
 ### parent
-The parent can be one of two things. It's either an HTML5 css *selector* (such as '#myTestDiv' or '.myclass .mysubclass'), or a *dom node*.
+The parent can be one of two things. It's either an HTML5 css **selector** (such as '#myTestDiv' or '.myclass .mysubclass'), or a **dom node**.
 
 It should point to the element where you want the imagecropper to be located.
 
