@@ -13,7 +13,6 @@ const commonjs = require('rollup-plugin-commonjs');
 const uglify = require('rollup-plugin-uglify');
 
 const rename = require('gulp-rename');
-const scssLint = require('gulp-scss-lint');
 const sass = require('gulp-sass');
 const autoprefixer = require('gulp-autoprefixer');
 
@@ -38,7 +37,7 @@ const config = {
         src : ['src/sass/**/**.scss'],
         dest : 'dist/css/',
     },
-}
+};
 
 //
 //  UTILITIES
@@ -80,9 +79,6 @@ const config = {
 
     function doSCSS (component) {
         return gulp.src(component.src)
-            .pipe(scssLint({
-                config : '.scss-lint.yml'
-            }))
             .pipe(sass({
                 outputStyle : 'compressed'
             }))
